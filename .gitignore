@@ -36,7 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-/src/main/java/be/kdg/sa/restaurantservice/infrastructure/idp_mysql_data/
-/src/main/java/be/kdg/sa/restaurantservice/infrastructure/init-scripts/sql/
-/src/main/java/be/kdg/sa/restaurantservice/infrastructure/postgresql/data/data/
-/src/main/java/be/kdg/sa/restaurantservice/infrastructure/rabbitmq/
+/infrastructure/idp_mysql_data/
+/infrastructure/init-scripts/
+/infrastructure/postgresql/
+/infrastructure/rabbitmq/
