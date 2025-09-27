@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.domain;
+package be.kdg.sa.restaurantservice.domain.restaurant;
 
 public class Address {
     private String street;
@@ -11,5 +11,21 @@ public class Address {
         this.number = number;
         this.postalCode = postalCode;
         this.country = country;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public int getPostalCode() {
+        return postalCode;
+    }
+
+    public String getCountry() {
+        return country;
     }
 }

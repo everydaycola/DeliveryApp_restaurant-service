@@ -24,7 +24,7 @@ public class RestaurantController {
 
     @PostMapping
     public ResponseEntity<RestaurantDto> create(@RequestBody RestaurantDto restaurantDto){
-        restaurants.create(ownerId, restaurantDto.name());
+        restaurants.create(ownerId, restaurantDto.name(),restaurantDto.address(),restaurantDto.contactEmail(),restaurantDto.type(),restaurantDto.openingHours(),restaurantDto.logo());
         return ResponseEntity.ok(restaurantDto);
     }
 

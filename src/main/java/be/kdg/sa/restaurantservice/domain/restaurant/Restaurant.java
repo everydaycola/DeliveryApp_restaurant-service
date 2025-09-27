@@ -2,7 +2,6 @@ package be.kdg.sa.restaurantservice.domain.restaurant;
 
 import be.kdg.sa.restaurantservice.domain.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Restaurant {
@@ -29,15 +28,8 @@ public class Restaurant {
         this.logo = logo;
     }
 
-    public static Restaurant newInstance(OwnerId ownerId,String name){
-        return new Restaurant(
-                RestaurantId.create(),
-                ownerId,name,
-                new Address("Placeholder Street",0,0,"Here"),
-                "test@email.com",
-                RestaurantType.FASTFOOD,
-                null,
-                "Logo.png");
+    public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, String logo) {
+        return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, openingHours, logo);
     }
 
     public RestaurantId getId() {

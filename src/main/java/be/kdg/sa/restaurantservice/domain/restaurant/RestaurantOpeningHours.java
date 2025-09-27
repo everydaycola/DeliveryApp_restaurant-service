@@ -14,4 +14,15 @@ public class RestaurantOpeningHours {
         this.closingTime = closingTime;
     }
 
+    public DayOfWeek getDay() {
+        return day;
+    }
+
+    public LocalTime getOpeningTime() {
+        return openingTime;
+    }
+
+    public LocalTime getClosingTime() {
+        return closingTime;
+    }
 }

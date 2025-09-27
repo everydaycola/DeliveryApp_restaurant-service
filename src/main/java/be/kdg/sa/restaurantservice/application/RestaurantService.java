@@ -1,9 +1,12 @@
 package be.kdg.sa.restaurantservice.application;
 
+import be.kdg.sa.restaurantservice.api.AddressDto;
+import be.kdg.sa.restaurantservice.api.RestaurantOpeningHoursDto;
 import be.kdg.sa.restaurantservice.domain.*;
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +18,22 @@ public class RestaurantService {
         this.restaurants = restaurants;
     }
 
-    public Restaurant create(OwnerId ownerId,String name){
-        final Restaurant restaurant = Restaurant.newInstance( ownerId,name);
+    public Restaurant create(OwnerId ownerId, String name, AddressDto addressDto, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHoursDto, String logo) {
+        //Convert AddressDto -> Address
+        Address address = new Address(addressDto.street(), addressDto.number(), addressDto.postalCode(), addressDto.country());
+
+        //Convert RestaurantOpeningHoursDto -> RestaurantOpeningHours
+        List<RestaurantOpeningHours> openingHours = new ArrayList<>();
+        openingHoursDto.forEach(rohDto -> openingHours.add(new RestaurantOpeningHours(rohDto.day(),rohDto.openingTime(),rohDto.closingTime())));
+
+        //Create & Save Restaurant
+        final Restaurant restaurant = Restaurant.newInstance(ownerId, name, address, contactEmail, type, openingHours, logo);
         restaurants.save(restaurant);
+
         return restaurant;
     }
 
-    public Restaurant findById(RestaurantId restaurantId){
+    public Restaurant findById(RestaurantId restaurantId) {
         return restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
