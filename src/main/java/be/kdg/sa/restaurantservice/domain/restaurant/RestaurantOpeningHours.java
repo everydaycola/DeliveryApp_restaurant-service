@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.domain;
+package be.kdg.sa.restaurantservice.domain.restaurant;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
