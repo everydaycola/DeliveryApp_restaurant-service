@@ -24,6 +24,7 @@ public class Restaurant {
     private String logo;
     //Orders
 
+
     private Logger logger = Logger.getLogger(Restaurant.class.getName());
 
 
@@ -48,9 +49,18 @@ public class Restaurant {
             menu.add(newDish);
             logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
         } else {
-            logger.log(Level.WARNING, String.format("Restaurant %s already has %d dishes.", this.getName(), MAX_DISHES));
+            logger.log(Level.WARNING, String.format("Restaurant %s already has %d dishes", this.getName(), MAX_DISHES));
         }
         return newDish;
+    }
+
+    public Dish updateDishState(DishId id, DishState state){
+        Dish dish = this.getDish(id);
+        dish.updateState(state);
+
+        logger.log(Level.FINE, String.format("State of Dish %s has been set to %s", dish.getName(), state.name()));
+
+        return dish;
     }
 
     //Getters

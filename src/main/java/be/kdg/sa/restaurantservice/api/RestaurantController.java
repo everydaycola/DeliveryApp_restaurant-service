@@ -3,6 +3,7 @@ package be.kdg.sa.restaurantservice.api;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
+import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
@@ -73,7 +74,7 @@ public class RestaurantController {
         return ResponseEntity.ok(dtos);
     }
 
-    //Menu & Dishes
+    //Dishes
     @GetMapping("/{id}/menu/full")
     public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
@@ -104,6 +105,18 @@ public class RestaurantController {
         final DishId dId = new DishId(dishId);
 
         Dish dish = restaurants.findById(restaurantId).getDish(dId);
+
+        return ResponseEntity.ok(DishDto.from(dish));
+    }
+
+    //PATCH
+    //Dishes
+    @PatchMapping("/{id}/menu/{dishId}/state")
+    public ResponseEntity<DishDto> updateDishState(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
+        final RestaurantId restaurantId = new RestaurantId(id);
+        final DishId dId = new DishId(dishId);
+
+        Dish dish = restaurants.findById(restaurantId).updateDishState(dId, dishDto.state());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }

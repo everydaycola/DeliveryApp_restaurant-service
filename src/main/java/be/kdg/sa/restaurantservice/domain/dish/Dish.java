@@ -13,6 +13,10 @@ public class Dish {
         this.state = DishState.NOT_PUBLISHED;
     }
 
+    public void updateState(DishState state){
+        this.state = state;
+    }
+
     public String getName() {
         return name;
     }
