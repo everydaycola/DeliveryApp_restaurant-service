@@ -3,9 +3,8 @@ package be.kdg.sa.restaurantservice.infrastructure;
 import be.kdg.sa.restaurantservice.api.AddressDto;
 import be.kdg.sa.restaurantservice.api.RestaurantOpeningHoursDto;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
-import be.kdg.sa.restaurantservice.domain.restaurant.Address;
-import be.kdg.sa.restaurantservice.domain.OwnerId;
-import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantOpeningHours;
+import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
+import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,11 +13,14 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
 
     private final RestaurantService restaurantService;
+    private Logger logger = Logger.getLogger(Restaurant.class.getName());
 
     public DataSeeder(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
@@ -31,7 +33,7 @@ public class DataSeeder implements CommandLineRunner {
         // Dummy address
         AddressDto address = new AddressDto(
                 "Cederlaan",
-                25,
+                35,
                 2600,
                 "Belgium"
         );
@@ -50,7 +52,7 @@ public class DataSeeder implements CommandLineRunner {
         );
 
         // Create sample restaurants
-        restaurantService.create(ownerId,
+        Restaurant resto1 = restaurantService.create(ownerId,
                 "Pasta Palace",
                 address,
                 "pasta@example.com",
@@ -59,24 +61,8 @@ public class DataSeeder implements CommandLineRunner {
                 "pasta-logo.png"
         );
 
-        restaurantService.create(ownerId,
-                "Sushi World",
-                address,
-                "sushi@example.com",
-                RestaurantType.JAPANESE,
-                openingHours,
-                "sushi-logo.png"
-        );
+        restaurantService.createDish(resto1.getId(),"Spaghetti Bolognese", "Spaghetti with Bolognese sauce");
 
-        restaurantService.create(ownerId,
-                "Burger Barn",
-                address,
-                "burger@example.com",
-                RestaurantType.AMERICAN,
-                openingHours,
-                "burger-logo.png"
-        );
-
-        System.out.println("Sample restaurants seeded");
+        logger.log(Level.FINE, "Sample restaurant successfully seeded");
     }
 }

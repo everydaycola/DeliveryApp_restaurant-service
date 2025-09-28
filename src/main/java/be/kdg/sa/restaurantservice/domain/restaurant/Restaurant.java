@@ -1,10 +1,17 @@
 package be.kdg.sa.restaurantservice.domain.restaurant;
 
-import be.kdg.sa.restaurantservice.domain.*;
+import be.kdg.sa.restaurantservice.domain.dish.Dish;
+import be.kdg.sa.restaurantservice.domain.dish.DishId;
+import be.kdg.sa.restaurantservice.domain.dish.DishState;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Restaurant {
+    private static final int MAX_DISHES = 10;
+
     private RestaurantId id;
     private OwnerId ownerId;
     private String name;
@@ -13,9 +20,12 @@ public class Restaurant {
     private RestaurantType type;
     private List<RestaurantOpeningHours> openingHours;
     private PriceCriteria priceCriteria;
-    private List<Dish> dishes;
+    private List<Dish> menu = new ArrayList<>();
     private String logo;
     //Orders
+
+    private Logger logger = Logger.getLogger(Restaurant.class.getName());
+
 
     private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, String logo) {
         this.id = id;
@@ -32,6 +42,18 @@ public class Restaurant {
         return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, openingHours, logo);
     }
 
+    public Dish addDish(String dishName, String description){
+        Dish newDish = new Dish(DishId.create(),dishName,description);
+        if (menu.size() < MAX_DISHES){
+            menu.add(newDish);
+            logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
+        } else {
+            logger.log(Level.WARNING, String.format("Restaurant %s already has %d dishes.", this.getName(), MAX_DISHES));
+        }
+        return newDish;
+    }
+
+    //Getters
     public RestaurantId getId() {
         return id;
     }
@@ -64,8 +86,16 @@ public class Restaurant {
         return priceCriteria;
     }
 
-    public List<Dish> getDishes() {
-        return dishes;
+    public List<Dish> getFullMenu() {
+        return menu;
+    }
+
+    public List<Dish> getPublicMenu(){
+        return menu.stream().filter(dish -> dish.getState() == DishState.PUBLISHED).toList();
+    }
+
+    public Dish getDish(DishId dishId){
+        return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
     }
 
     public String getLogo() {
