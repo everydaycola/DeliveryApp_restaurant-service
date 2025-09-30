@@ -1,0 +1,85 @@
+### Create a new restaurant
+POST http://localhost:8081/api/restaurants
+Content-Type: application/json
+
+{
+  "name": "Lekker eten",
+  "address": {
+    "street": "meir",
+    "country": "belgium",
+    "number": 16,
+    "postalCode": 2000
+  },
+  "type": "AMERICAN",
+  "openingHours": [
+    {
+      "day": "MONDAY",
+      "openingTime": "08:00:00",
+      "closingTime": "21:00:00"
+    },
+    {
+      "day": "TUESDAY",
+      "openingTime": "08:00:00",
+      "closingTime": "21:00:00"
+    },
+    {
+      "day": "WEDNESDAY",
+      "openingTime": "08:00:00",
+      "closingTime": "21:00:00"
+    },
+    {
+      "day": "THURSDAY",
+      "openingTime": "08:00:00",
+      "closingTime": "21:00:00"
+    },
+    {
+      "day": "FRIDAY",
+      "openingTime": "08:00:00",
+      "closingTime": "21:00:00"
+    },
+    {
+      "day": "SATURDAY",
+      "openingTime": "08:00:00",
+      "closingTime": "21:00:00"
+    }
+  ],
+  "logo": "2025-09-30T152345.png",
+  "contactEmail": "ilja.nachterhaele@student.kdg.be",
+  "description": "A restaurant for testing"
+}
+
+### Get all restaurants
+GET http://localhost:8081/api/restaurants
+
+### Get a specific restaurant by ID
+GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef
+
+### Get the full menu of a restaurant
+GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/full
+
+### Create a new dish for a restaurant
+POST http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu
+Content-Type: application/json
+
+{
+  "name": "Lasagne",
+  "description": "Garfield's favorite",
+  "price": 44.99,
+  "state": "NOT_AVAILABLE"
+}
+
+### Get the public menu of a restaurant
+GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu
+
+### Update a dish's state
+PATCH http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/75e82b8d-7a6d-4183-9d40-e8b9b1f61c1e/state
+Content-Type: application/json
+
+{
+  "state": "PUBLISHED"
+}
+
+### Get a specific dish from a restaurant
+GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/75e82b8d-7a6d-4183-9d40-e8b9b1f61c1e
+
+###
