@@ -43,19 +43,22 @@ public class Restaurant {
         return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, openingHours, logo);
     }
 
-    public Dish addDish(String dishName, String description){
-        Dish newDish = new Dish(DishId.create(),dishName,description);
-        if (menu.size() < MAX_DISHES){
-            menu.add(newDish);
-            logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
-        } else {
-            logger.log(Level.WARNING, String.format("Restaurant %s already has %d dishes", this.getName(), MAX_DISHES));
-        }
+    public Dish addDish(String dishName, String description) {
+        Dish newDish = new Dish(DishId.create(), dishName, description);
+        menu.add(newDish);
+
+        logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
+
         return newDish;
     }
 
-    public Dish updateDishState(DishId id, DishState state){
+    public Dish updateDishState(DishId id, DishState state) {
         Dish dish = this.getDish(id);
+
+        if (state.equals(DishState.PUBLISHED) && menu.size() >= MAX_DISHES) {
+            logger.log(Level.WARNING, String.format("Restaurant %s already has %d dishes", this.getName(), MAX_DISHES));
+            return dish;
+        }
         dish.updateState(state);
 
         logger.log(Level.FINE, String.format("State of Dish %s has been set to %s", dish.getName(), state.name()));
@@ -100,11 +103,11 @@ public class Restaurant {
         return menu;
     }
 
-    public List<Dish> getPublicMenu(){
+    public List<Dish> getPublicMenu() {
         return menu.stream().filter(dish -> dish.getState() == DishState.PUBLISHED).toList();
     }
 
-    public Dish getDish(DishId dishId){
+    public Dish getDish(DishId dishId) {
         return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
     }
 
