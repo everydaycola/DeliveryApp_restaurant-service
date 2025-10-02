@@ -28,4 +28,9 @@ public class Address {
     public String getCountry() {
         return country;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s %d %d", country, street,number,postalCode);
+    }
 }

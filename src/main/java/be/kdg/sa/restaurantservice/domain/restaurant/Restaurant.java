@@ -39,6 +39,18 @@ public class Restaurant {
         this.logo = logo;
     }
 
+    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, PriceCriteria priceCriteria, String logo) {
+        this.id = id;
+        this.ownerId = ownerId;
+        this.name = name;
+        this.address = address;
+        this.contactEmail = contactEmail;
+        this.type = type;
+        this.openingHours = openingHours;
+        this.priceCriteria = priceCriteria;
+        this.logo = logo;
+    }
+
     public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, String logo) {
         return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, openingHours, logo);
     }
