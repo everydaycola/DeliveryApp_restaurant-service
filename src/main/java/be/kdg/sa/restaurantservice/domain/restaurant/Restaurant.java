@@ -3,13 +3,13 @@ package be.kdg.sa.restaurantservice.domain.restaurant;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 public class Restaurant {
     private static final int MAX_DISHES = 10;
 
@@ -26,7 +26,7 @@ public class Restaurant {
     //Orders
 
 
-    private Logger logger = Logger.getLogger(Restaurant.class.getName());
+    //private Logger logger = Logger.getLogger(Restaurant.class.getName());
 
 
     private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, String logo) {
@@ -60,7 +60,7 @@ public class Restaurant {
         Dish newDish = new Dish(DishId.create(), dishName, description);
         this.menu.add(newDish);
 
-        logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
+        log.info("New dish {} added to {}", newDish.getName(), this.getName());
 
         return newDish;
     }
@@ -69,7 +69,7 @@ public class Restaurant {
         Dish newDish = new Dish(new DishId(dishId), dishName, state, description);
         this.menu.add(newDish);
 
-        logger.log(Level.FINE, String.format("Dish %s added to %s from repository", newDish.getName(), this.getName()));
+        log.info("Dish {} added to {} from repository", newDish.getName(), this.getName());
 
         return newDish;
     }
@@ -78,12 +78,12 @@ public class Restaurant {
         Dish dish = this.getDish(id);
 
         if (state.equals(DishState.PUBLISHED) && menu.size() >= MAX_DISHES) {
-            logger.log(Level.WARNING, String.format("Restaurant %s already has %d dishes", this.getName(), MAX_DISHES));
+            log.info("Restaurant {} already has {} dishes", this.getName(), MAX_DISHES);
             return dish;
         }
         dish.updateState(state);
 
-        logger.log(Level.FINE, String.format("State of Dish %s has been set to %s", dish.getName(), state.name()));
+        log.info("State of Dish {} has been set to {}", dish.getName(), state.name());
 
         return dish;
     }
