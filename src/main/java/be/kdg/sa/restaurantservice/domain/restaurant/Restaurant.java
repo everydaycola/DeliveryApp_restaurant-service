@@ -6,6 +6,7 @@ import be.kdg.sa.restaurantservice.domain.dish.DishState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,6 +61,14 @@ public class Restaurant {
         menu.add(newDish);
 
         logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
+
+        return newDish;
+    }
+
+    public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state){
+        Dish newDish = new Dish(new DishId(dishId), dishName, state, description);
+
+        logger.log(Level.FINE, String.format("Dish %s added to %s from repository", newDish.getName(), this.getName()));
 
         return newDish;
     }
@@ -122,6 +131,7 @@ public class Restaurant {
     public Dish getDish(DishId dishId) {
         return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
     }
+
 
     public String getLogo() {
         return logo;

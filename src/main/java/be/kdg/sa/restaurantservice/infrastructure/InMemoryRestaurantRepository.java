@@ -1,5 +1,6 @@
 package be.kdg.sa.restaurantservice.infrastructure;
 
+import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantRepository;
@@ -24,5 +25,10 @@ public class InMemoryRestaurantRepository implements RestaurantRepository {
     @Override
     public List<Restaurant> findAll() {
         return List.copyOf(restaurants.values());
+    }
+
+    @Override
+    public Optional<Restaurant> findByIdWithMenu(RestaurantId restaurantId) {
+        return Optional.empty();
     }
 }

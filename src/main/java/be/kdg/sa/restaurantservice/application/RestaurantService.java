@@ -2,9 +2,9 @@ package be.kdg.sa.restaurantservice.application;
 
 import be.kdg.sa.restaurantservice.api.AddressDto;
 import be.kdg.sa.restaurantservice.api.RestaurantOpeningHoursDto;
-import be.kdg.sa.restaurantservice.domain.NotFoundException;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 public class RestaurantService {
     private final RestaurantRepository restaurants;
 
-    public RestaurantService(RestaurantRepository restaurants) {
+    public RestaurantService(@Qualifier("dbRestaurantRepository") RestaurantRepository restaurants) {
         this.restaurants = restaurants;
     }
 
@@ -34,12 +34,18 @@ public class RestaurantService {
     }
 
     public Dish createDish(RestaurantId id, String dishName, String description){
-        Restaurant restaurant = restaurants.findById(id).orElseThrow();
-        return restaurant.addDish(dishName, description);
+        Restaurant restaurant = restaurants.findByIdWithMenu(id).orElseThrow();
+        Dish dish = restaurant.addDish(dishName, description);
+        restaurants.save(restaurant);
+        return dish;
     }
 
     public Restaurant findById(RestaurantId restaurantId) {
         return restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
+    }
+
+    public Restaurant findByIdWithMenu(RestaurantId restaurantId){
+        return restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
     public List<Restaurant> findAll() {

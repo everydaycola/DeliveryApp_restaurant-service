@@ -22,6 +22,7 @@ public class JpaRestaurantEntity {
     @Column
     private String name;
 
+    //Address is split in 4
     @Column
     private String street;
 
@@ -46,6 +47,8 @@ public class JpaRestaurantEntity {
 
     @Column
     private String logo;
+
+    //TODO: Opening Hours Column
 
     protected JpaRestaurantEntity(){};
 
@@ -99,8 +102,7 @@ public class JpaRestaurantEntity {
                 logo
         );
         menu.forEach(jpaDish ->{
-            restaurant.addDish(jpaDish.getName(), jpaDish.getDescription());
-            restaurant.updateDishState(new DishId(jpaDish.getId()),jpaDish.getState());
+            restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState());
         });
 
         return restaurant;

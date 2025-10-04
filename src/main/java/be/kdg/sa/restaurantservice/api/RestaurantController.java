@@ -47,7 +47,7 @@ public class RestaurantController {
     @PostMapping("/{id}/menu")
     public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody DishDto dishDto){
         final RestaurantId restaurantId = new RestaurantId(id);
-        final Restaurant restaurant = restaurants.findById(restaurantId);
+        final Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId);
 
         Dish dish = restaurant.addDish(dishDto.name(), dishDto.description());
 
@@ -78,7 +78,7 @@ public class RestaurantController {
     @GetMapping("/{id}/menu/full")
     public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findById(restaurantId).getFullMenu();
+        List<Dish> allDishes = restaurants.findByIdWithMenu(restaurantId).getFullMenu();
 
         List<DishDto> dtos = allDishes.stream()
                 .map(DishDto::from)
@@ -90,7 +90,7 @@ public class RestaurantController {
     @GetMapping("/{id}/menu")
     public ResponseEntity<List<DishDto>> findPublicMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findById(restaurantId).getPublicMenu();
+        List<Dish> allDishes = restaurants.findByIdWithMenu(restaurantId).getPublicMenu();
 
         List<DishDto> dtos = allDishes.stream()
                 .map(DishDto::from)
@@ -104,7 +104,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
-        Dish dish = restaurants.findById(restaurantId).getDish(dId);
+        Dish dish = restaurants.findByIdWithMenu(restaurantId).getDish(dId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -116,7 +116,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
-        Dish dish = restaurants.findById(restaurantId).updateDishState(dId, dishDto.state());
+        Dish dish = restaurants.findByIdWithMenu(restaurantId).updateDishState(dId, dishDto.state());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
