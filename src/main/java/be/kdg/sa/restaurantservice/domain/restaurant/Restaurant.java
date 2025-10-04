@@ -58,7 +58,7 @@ public class Restaurant {
 
     public Dish addDish(String dishName, String description) {
         Dish newDish = new Dish(DishId.create(), dishName, description);
-        menu.add(newDish);
+        this.menu.add(newDish);
 
         logger.log(Level.FINE, String.format("New dish %s added to %s", newDish.getName(), this.getName()));
 
@@ -67,6 +67,7 @@ public class Restaurant {
 
     public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state){
         Dish newDish = new Dish(new DishId(dishId), dishName, state, description);
+        this.menu.add(newDish);
 
         logger.log(Level.FINE, String.format("Dish %s added to %s from repository", newDish.getName(), this.getName()));
 

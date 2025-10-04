@@ -10,9 +10,10 @@ import java.util.UUID;
 public interface JpaRestaurantRepository extends JpaRepository<JpaRestaurantEntity, UUID> {
 
     @Query(value = """
-            select r 
+            select r
             from JpaRestaurantEntity r
-            left join fetch r.menu where r.id = :id
+            left join fetch r.menu
+            where r.id = :id
             """)
     Optional<JpaRestaurantEntity> findByIdWithMenu(UUID id);
 }

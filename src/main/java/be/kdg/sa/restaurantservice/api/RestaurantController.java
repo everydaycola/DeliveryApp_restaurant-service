@@ -47,9 +47,8 @@ public class RestaurantController {
     @PostMapping("/{id}/menu")
     public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody DishDto dishDto){
         final RestaurantId restaurantId = new RestaurantId(id);
-        final Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId);
 
-        Dish dish = restaurant.addDish(dishDto.name(), dishDto.description());
+        Dish dish = restaurants.createDish(restaurantId, dishDto.name(), dishDto.description());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -75,7 +74,7 @@ public class RestaurantController {
     }
 
     //Dishes
-    @GetMapping("/{id}/menu/full")
+    @GetMapping("/{id}/menu_full")
     public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
         List<Dish> allDishes = restaurants.findByIdWithMenu(restaurantId).getFullMenu();
@@ -116,7 +115,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
-        Dish dish = restaurants.findByIdWithMenu(restaurantId).updateDishState(dId, dishDto.state());
+        Dish dish = restaurants.UpdateDishState(restaurantId, dId, dishDto.state());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }

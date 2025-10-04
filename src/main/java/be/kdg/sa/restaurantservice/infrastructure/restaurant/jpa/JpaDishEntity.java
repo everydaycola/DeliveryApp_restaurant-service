@@ -21,6 +21,7 @@ public class JpaDishEntity {
     private DishState state;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private JpaRestaurantEntity restaurant;
 
     @Column

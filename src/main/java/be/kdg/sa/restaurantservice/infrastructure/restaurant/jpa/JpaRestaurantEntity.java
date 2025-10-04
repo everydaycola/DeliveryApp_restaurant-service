@@ -42,8 +42,8 @@ public class JpaRestaurantEntity {
     @Column
     private RestaurantType type;
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.MERGE)
-    private List<JpaDishEntity> menu = new ArrayList<>();
+    @OneToMany(mappedBy = "restaurant", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<JpaDishEntity> menu;
 
     @Column
     private String logo;
@@ -111,5 +111,9 @@ public class JpaRestaurantEntity {
     public void setMenu(List<JpaDishEntity> menu){
         this.menu = menu;
         this.menu.forEach(dish -> dish.setRestaurant(this));
+    }
+
+    public List<JpaDishEntity> getMenu() {
+        return menu;
     }
 }
