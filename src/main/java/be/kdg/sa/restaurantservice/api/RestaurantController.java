@@ -3,7 +3,6 @@ package be.kdg.sa.restaurantservice.api;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
-import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
@@ -58,7 +57,7 @@ public class RestaurantController {
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantDto> findById(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        final Restaurant restaurant = restaurants.findById(restaurantId);
+        final Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 

@@ -9,7 +9,6 @@ import be.kdg.sa.restaurantservice.domain.restaurant.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,6 +51,10 @@ public class RestaurantService {
 
     public Restaurant findByIdWithMenu(RestaurantId restaurantId){
         return restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
+    }
+
+    public Restaurant findByIdWithMenuAndOpeningHours(RestaurantId restaurantId){
+        return restaurants.findByIdWithMenuAndOpeningHours(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
     public List<Restaurant> findAll() {

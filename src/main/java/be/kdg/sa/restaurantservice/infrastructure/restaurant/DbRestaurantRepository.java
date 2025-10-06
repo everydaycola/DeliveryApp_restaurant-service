@@ -41,4 +41,8 @@ public class DbRestaurantRepository implements RestaurantRepository {
     public Optional<Restaurant> findByIdWithMenu(RestaurantId restaurantId){
         return this.jpaRestaurantRepository.findByIdWithMenu(restaurantId.id()).map(JpaRestaurantEntity::toDomain);
     }
+
+    public Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId){
+        return this.jpaRestaurantRepository.findByIdWithMenuAndOpeningHours(restaurantId.id()).map(JpaRestaurantEntity::toDomain);
+    }
 }
