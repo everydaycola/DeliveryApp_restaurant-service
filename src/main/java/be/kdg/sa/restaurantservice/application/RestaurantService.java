@@ -15,7 +15,7 @@ import java.util.List;
 public class RestaurantService {
     private final RestaurantRepository restaurants;
 
-    public RestaurantService(@Qualifier("dbRestaurantRepository") RestaurantRepository restaurants) {
+    public RestaurantService(RestaurantRepository restaurants) {
         this.restaurants = restaurants;
     }
 
@@ -62,6 +62,16 @@ public class RestaurantService {
     }
 
     //Update
+    //Dish
+    public Dish UpdateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
+        Restaurant restaurant = findByIdWithMenu(restaurantId);
+        Dish dish = restaurant.updateDish(dishId, name, description);
+
+        restaurants.save(restaurant);
+
+        return dish;
+    }
+
     public Dish UpdateDishState(RestaurantId restaurantId, DishId dishId, DishState state){
        Restaurant restaurant = findByIdWithMenu(restaurantId);
        Dish dish = restaurant.updateDishState(dishId, state);

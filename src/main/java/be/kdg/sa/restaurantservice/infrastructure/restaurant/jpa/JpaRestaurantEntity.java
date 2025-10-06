@@ -45,7 +45,6 @@ public class JpaRestaurantEntity {
     @Column
     private String logo;
 
-    //TODO: Opening Hours Column
     @OneToMany(mappedBy = "restaurant", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<JpaRestaurantOpeningHours> openingHours;
 
@@ -98,7 +97,7 @@ public class JpaRestaurantEntity {
     public Restaurant toDomain(){
         Restaurant restaurant = new Restaurant(
                 new RestaurantId(id),
-                new OwnerId(id),
+                new OwnerId(ownerId),
                 name,
                 new Address(street, number, postalCode, country),
                 contactEmail,
@@ -106,11 +105,11 @@ public class JpaRestaurantEntity {
                 new PriceCriteria(){},
                 logo
         );
-        menu.forEach(jpaDish ->{
-            restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState());
-        });
+        menu.forEach(jpaDish ->
+            restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState()));
 
-        openingHours.forEach(jpaRoh -> restaurant.addOpeningHours(jpaRoh.getDay(), jpaRoh.getOpeningTime(), jpaRoh.getClosingTime()));
+        openingHours.forEach(jpaRoh ->
+                restaurant.addOpeningHours(jpaRoh.getDay(), jpaRoh.getOpeningTime(), jpaRoh.getClosingTime()));
 
         return restaurant;
     }

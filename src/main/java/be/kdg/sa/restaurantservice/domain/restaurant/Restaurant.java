@@ -26,7 +26,7 @@ public class Restaurant {
     private RestaurantType type;
     private List<RestaurantOpeningHours> openingHours;
     private PriceCriteria priceCriteria;
-    private List<Dish> menu = new ArrayList<>();
+    private List<Dish> menu;
     private String logo;
     //Orders
 
@@ -38,6 +38,8 @@ public class Restaurant {
         this.contactEmail = contactEmail;
         this.type = type;
         this.logo = logo;
+        this.openingHours = new ArrayList<>();
+        this.menu = new ArrayList<>();
     }
 
     public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, PriceCriteria priceCriteria, String logo) {
@@ -49,6 +51,8 @@ public class Restaurant {
         this.type = type;
         this.priceCriteria = priceCriteria;
         this.logo = logo;
+        this.openingHours = new ArrayList<>();
+        this.menu = new ArrayList<>();
     }
 
     public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
@@ -74,6 +78,12 @@ public class Restaurant {
         return newDish;
     }
 
+    public Dish updateDish(DishId id, String name, String description){
+        Dish dish = this.getDish(id);
+        dish.updateDish(name,description);
+        return dish;
+    }
+
     public Dish updateDishState(DishId id, DishState state) {
         Dish dish = this.getDish(id);
 
@@ -91,10 +101,12 @@ public class Restaurant {
     //OpeningHours Aggregate
     public RestaurantOpeningHours addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end){
         RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day,start,end);
-        if (checkOpeningHoursOverlap(newOpeningHours)){
-            throw new IllegalArgumentException("These hours overlap with existing hours");
+        if (!openingHours.isEmpty()) {
+            if (checkOpeningHoursOverlap(newOpeningHours)) {
+                throw new IllegalArgumentException("These hours overlap with existing hours");
+            }
         }
-
+        openingHours.add(newOpeningHours);
         return newOpeningHours;
     }
 

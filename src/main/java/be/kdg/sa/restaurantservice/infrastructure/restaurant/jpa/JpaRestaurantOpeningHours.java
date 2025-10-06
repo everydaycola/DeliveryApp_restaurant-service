@@ -9,7 +9,7 @@ import java.util.UUID;
 
 //This is only an entity in the Database
 @Entity
-@Table
+@Table(name = "openingHours")
 public class JpaRestaurantOpeningHours {
 
     @Id
@@ -36,10 +36,6 @@ public class JpaRestaurantOpeningHours {
         this.day = day;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
-    }
-
-    public RestaurantOpeningHours toDomain(JpaRestaurantOpeningHours jpaRoh){
-        return new RestaurantOpeningHours(jpaRoh.getDay(),jpaRoh.getOpeningTime(),jpaRoh.closingTime);
     }
 
     public static JpaRestaurantOpeningHours fromDomain(RestaurantOpeningHours roh){

@@ -20,6 +20,12 @@ public class Dish {
         this.description = description;
     }
 
+    public Dish updateDish(String name, String description){
+        this.name = name;
+        this.description = description;
+        return this;
+    }
+
     public void updateState(DishState state){
         this.state = state;
     }

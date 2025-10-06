@@ -11,7 +11,8 @@ public interface JpaRestaurantRepository extends JpaRepository<JpaRestaurantEnti
     @Query(value = """
             select r
             from JpaRestaurantEntity r
-            left join fetch r.menu on r.id = :id
+            left join JpaDishEntity d on d.restaurant.id = :id
+            where r.id = :id
             """)
     Optional<JpaRestaurantEntity> findByIdWithMenu(UUID id);
 
@@ -19,8 +20,9 @@ public interface JpaRestaurantRepository extends JpaRepository<JpaRestaurantEnti
     @Query(value = """
             select r
             from JpaRestaurantEntity r
-            left join fetch r.menu on r.id = :id
-            left join fetch r.openingHours on r.id = :id
+            left join JpaDishEntity d on d.restaurant.id = :id
+            left join JpaRestaurantOpeningHours roh on roh.restaurant.id = :id
+            where r.id = :id
             """)
     Optional<JpaRestaurantEntity> findByIdWithMenuAndOpeningHours(UUID id);
 }
