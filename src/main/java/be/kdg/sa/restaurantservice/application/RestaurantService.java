@@ -21,21 +21,23 @@ public class RestaurantService {
     }
 
     //Create
-    public Restaurant create(OwnerId ownerId, String name, AddressDto addressDto, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHoursDto, String logo) {
+    //Restaurant
+    public Restaurant create(OwnerId ownerId, String name, AddressDto addressDto, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHoursDtos, String logo) {
         //Convert AddressDto -> Address
         Address address = new Address(addressDto.street(), addressDto.number(), addressDto.postalCode(), addressDto.country());
 
-        //Convert RestaurantOpeningHoursDto -> RestaurantOpeningHours
-        List<RestaurantOpeningHours> openingHours = new ArrayList<>();
-        openingHoursDto.forEach(rohDto -> openingHours.add(new RestaurantOpeningHours(rohDto.day(),rohDto.openingTime(),rohDto.closingTime())));
+        //Create Restaurant
+        final Restaurant restaurant = Restaurant.newInstance(ownerId, name, address, contactEmail, type, logo);
 
-        //Create & Save Restaurant
-        final Restaurant restaurant = Restaurant.newInstance(ownerId, name, address, contactEmail, type, openingHours, logo);
+        //Convert RestaurantOpeningHoursDto -> RestaurantOpeningHours
+        openingHoursDtos.forEach(rohDto -> restaurant.addOpeningHours(rohDto.day(),rohDto.openingTime(), rohDto.closingTime()));
+
         restaurants.save(restaurant);
 
         return restaurant;
     }
 
+    //Dish
     public Dish createDish(RestaurantId id, String dishName, String description){
         Restaurant restaurant = restaurants.findByIdWithMenu(id).orElseThrow(id::notFound);
         Dish dish = restaurant.addDish(dishName, description);

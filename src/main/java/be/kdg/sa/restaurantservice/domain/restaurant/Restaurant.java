@@ -4,11 +4,16 @@ import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import lombok.extern.slf4j.Slf4j;
+import org.jmolecules.ddd.annotation.AggregateRoot;
 
+import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@AggregateRoot
 @Slf4j
 public class Restaurant {
     private static final int MAX_DISHES = 10;
@@ -25,37 +30,32 @@ public class Restaurant {
     private String logo;
     //Orders
 
-
-    //private Logger logger = Logger.getLogger(Restaurant.class.getName());
-
-
-    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, String logo) {
+    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type ,String logo) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
         this.address = address;
         this.contactEmail = contactEmail;
         this.type = type;
-        this.openingHours = openingHours;
         this.logo = logo;
     }
 
-    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, PriceCriteria priceCriteria, String logo) {
+    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, PriceCriteria priceCriteria, String logo) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
         this.address = address;
         this.contactEmail = contactEmail;
         this.type = type;
-        this.openingHours = openingHours;
         this.priceCriteria = priceCriteria;
         this.logo = logo;
     }
 
-    public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, List<RestaurantOpeningHours> openingHours, String logo) {
-        return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, openingHours, logo);
+    public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
+        return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo);
     }
 
+    //Dish Aggregate
     public Dish addDish(String dishName, String description) {
         Dish newDish = new Dish(DishId.create(), dishName, description);
         this.menu.add(newDish);
@@ -86,6 +86,23 @@ public class Restaurant {
         log.info("State of Dish {} has been set to {}", dish.getName(), state.name());
 
         return dish;
+    }
+
+    //OpeningHours Aggregate
+    public RestaurantOpeningHours addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end){
+        RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day,start,end);
+        if (checkOpeningHoursOverlap(newOpeningHours)){
+            throw new IllegalArgumentException("These hours overlap with existing hours");
+        }
+
+        return newOpeningHours;
+    }
+
+    private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh){
+        return openingHours.stream()
+                .filter(roh -> roh.getDay().equals(newRoh.getDay()))
+                .anyMatch(roh -> roh.getOpeningTime().isBefore(newRoh.getClosingTime()) ||
+                        roh.getClosingTime().isAfter(newRoh.getOpeningTime()));
     }
 
     //Getters

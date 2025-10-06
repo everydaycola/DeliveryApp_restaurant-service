@@ -1,11 +1,8 @@
 package be.kdg.sa.restaurantservice.infrastructure.restaurant.jpa;
 
-import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
 import jakarta.persistence.*;
-import jakarta.websocket.ClientEndpoint;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,8 +46,11 @@ public class JpaRestaurantEntity {
     private String logo;
 
     //TODO: Opening Hours Column
+    @OneToMany(mappedBy = "restaurant", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<JpaRestaurantOpeningHours> openingHours;
 
-    protected JpaRestaurantEntity(){};
+    protected JpaRestaurantEntity(){
+    };
 
     public JpaRestaurantEntity(UUID id, UUID ownerId, String name, String street, int number, int postalCode, String country, String contactEmail, RestaurantType type, String logo) {
         this.id = id;
@@ -86,6 +86,12 @@ public class JpaRestaurantEntity {
                 .toList();
         jpaRestaurantEntity.setMenu(jpaDishEntities);
 
+        //Filling the Jpa Opening Hours
+        List<JpaRestaurantOpeningHours> jpaRestaurantOpeningHours = restaurant.getOpeningHours().stream()
+                .map(JpaRestaurantOpeningHours::fromDomain)
+                .toList();
+        jpaRestaurantEntity.setOpeningHours(jpaRestaurantOpeningHours);
+
         return jpaRestaurantEntity;
     }
 
@@ -97,13 +103,14 @@ public class JpaRestaurantEntity {
                 new Address(street, number, postalCode, country),
                 contactEmail,
                 type,
-                new ArrayList<>(),
                 new PriceCriteria(){},
                 logo
         );
         menu.forEach(jpaDish ->{
             restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState());
         });
+
+        openingHours.forEach(jpaRoh -> restaurant.addOpeningHours(jpaRoh.getDay(), jpaRoh.getOpeningTime(), jpaRoh.getClosingTime()));
 
         return restaurant;
     }
@@ -113,7 +120,16 @@ public class JpaRestaurantEntity {
         this.menu.forEach(dish -> dish.setRestaurant(this));
     }
 
+    public void setOpeningHours(List<JpaRestaurantOpeningHours> openingHours){
+        this.openingHours = openingHours;
+        this.openingHours.forEach(roh -> roh.setRestaurant(this));
+    }
+
     public List<JpaDishEntity> getMenu() {
         return menu;
+    }
+
+    public List<JpaRestaurantOpeningHours> getOpeningHours() {
+        return openingHours;
     }
 }
