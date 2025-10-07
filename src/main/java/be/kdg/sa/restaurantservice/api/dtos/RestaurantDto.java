@@ -6,7 +6,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantType;
 import java.util.List;
 import java.util.UUID;
 
-public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto address, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHours, String logo, MenuCountsDto menuCounts) {
+public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto address, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHours, String logo, MenuCountsDto menuCounts, boolean isOpen) {
     public static RestaurantDto from(Restaurant restaurant) {
         return new RestaurantDto(
                 restaurant.getId().id(),
@@ -17,7 +17,8 @@ public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto addre
                 restaurant.getType(),
                 restaurant.getOpeningHours().stream().map(RestaurantOpeningHoursDto::from).toList(),
                 restaurant.getLogo(),
-                MenuCountsDto.from(restaurant.getFullMenu())
+                MenuCountsDto.from(restaurant.getFullMenu()),
+                restaurant.isOpen()
                 );
     }
 }

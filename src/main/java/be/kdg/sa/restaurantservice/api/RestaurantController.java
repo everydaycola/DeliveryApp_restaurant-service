@@ -111,6 +111,18 @@ public class RestaurantController {
     }
 
     //PATCH
+    //Restaurant
+    @PatchMapping("/{id}")
+    public ResponseEntity<RestaurantDto> openOrCloseRestaurant(@PathVariable final UUID id,
+                                                               @RequestParam final boolean open){
+        final RestaurantId restaurantId = new RestaurantId(id);
+
+        Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
+        restaurant.open(isOpen);
+
+        return ResponseEntity.ok(RestaurantDto.from(restaurant));
+    }
+
     //Dishes
     @PatchMapping("/{id}/menu/{dishId}")
     public ResponseEntity<DishDto> updateDish(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){

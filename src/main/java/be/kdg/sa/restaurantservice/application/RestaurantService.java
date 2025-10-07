@@ -44,23 +44,44 @@ public class RestaurantService {
     }
 
     //Find
+    //Restaurant
     public Restaurant findById(RestaurantId restaurantId) {
-        return restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
+        Restaurant restaurant = restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
+        if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
+        return restaurant;
     }
 
     public Restaurant findByIdWithMenu(RestaurantId restaurantId){
-        return restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
+        Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
+        if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
+        return restaurant;
     }
 
     public Restaurant findByIdWithMenuAndOpeningHours(RestaurantId restaurantId){
-        return restaurants.findByIdWithMenuAndOpeningHours(restaurantId).orElseThrow(restaurantId::notFound);
+        Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId).orElseThrow(restaurantId::notFound);
+        if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
+        return restaurant;
     }
 
     public List<Restaurant> findAll() {
-        return restaurants.findAll();
+        List<Restaurant> restos = restaurants.findAll();
+        restos.forEach(restaurant -> {
+            if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
+        });
+        return restos;
     }
 
     //Update
+    //Restaurant
+    private void checkIfOpenAndUpdate(Restaurant restaurant){
+        restaurant.checkIfOpen();
+        restaurants.save(restaurant);
+    }
+
+    private void updateOpen(Restaurant restaurant, boolean isOpen){
+        restaurant.open(isOpen);
+        restaurants.save(restaurant);
+    }
     //Dish
     public Dish UpdateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
         Restaurant restaurant = findByIdWithMenu(restaurantId);
@@ -79,4 +100,5 @@ public class RestaurantService {
 
        return dish;
     }
+
 }

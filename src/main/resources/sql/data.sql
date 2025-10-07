@@ -1,7 +1,7 @@
 -- Insert Pasta Palace
-INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo)
+INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, is_open,overwrite_opening_hours )
 VALUES ('dab961f7-5441-4827-a55e-7fcbc86a8fb2', '5e66f930-f76e-476a-a1be-20e1ceccdf57', 'Pasta Palace', 'Cederlaan', 35,
-        2600, 'Belgium', 'pasta@example.com', 'ITALIAN', 'pasta-logo.png');
+        2600, 'Belgium', 'pasta@example.com', 'ITALIAN', 'pasta-logo.png',false,false);
 
 -- Insert dishes for Pasta Palace
 INSERT INTO dishes (id, restaurant_id, name, description, state)
@@ -22,9 +22,9 @@ VALUES ('e8f2ab29-5a78-4f16-8a36-23fca9fdbd21', 'dab961f7-5441-4827-a55e-7fcbc86
        ('b4f2d915-3c24-4d8f-b7a7-8c26f9ea5a42', 'dab961f7-5441-4827-a55e-7fcbc86a8fb2', 'SUNDAY', '11:30', '21:00');
 
 -- Insert Sushi World
-INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo)
+INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, is_open,overwrite_opening_hours )
 VALUES ('7f3037c6-a58d-402b-bcfc-def8157fdbfc', '8d12f930-f76e-476a-a1be-20e1ceccdf99', 'Sushi World', 'Kapellestraat',
-        12, 1000, 'Belgium', 'sushi@example.com', 'JAPANESE', 'sushi-logo.png');
+        12, 1000, 'Belgium', 'sushi@example.com', 'JAPANESE', 'sushi-logo.png', false,false);
 
 -- Insert dishes for Sushi World
 INSERT INTO dishes (id, restaurant_id, name, description, state)

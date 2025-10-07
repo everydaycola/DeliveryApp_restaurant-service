@@ -6,8 +6,8 @@ import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
-import java.sql.Timestamp;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +28,11 @@ public class Restaurant {
     private PriceCriteria priceCriteria;
     private List<Dish> menu;
     private String logo;
+    private boolean isOpen;
+    private boolean overwriteOpeningHours;
     //Orders
 
-    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type ,String logo) {
+    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
@@ -40,9 +42,11 @@ public class Restaurant {
         this.logo = logo;
         this.openingHours = new ArrayList<>();
         this.menu = new ArrayList<>();
+        this.isOpen = false;
+        this.overwriteOpeningHours = false;
     }
 
-    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, PriceCriteria priceCriteria, String logo) {
+    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, PriceCriteria priceCriteria, String logo, boolean isOpen, boolean overwriteOpeningHours) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
@@ -53,10 +57,29 @@ public class Restaurant {
         this.logo = logo;
         this.openingHours = new ArrayList<>();
         this.menu = new ArrayList<>();
+        this.isOpen = isOpen;
+        this.overwriteOpeningHours = overwriteOpeningHours;
     }
 
     public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
         return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo);
+    }
+
+    public void checkIfOpen() {
+        LocalDateTime now = LocalDateTime.now();
+        isOpen = openingHours.stream()
+                .filter(roh -> roh.getDay().equals(now.getDayOfWeek()))
+                .anyMatch(roh -> roh.getOpeningTime().isBefore(now.toLocalTime()) &&
+                        roh.getClosingTime().isAfter(now.toLocalTime()));
+    }
+
+    public void open(boolean isOpen){
+        this.isOpen = isOpen;
+        this.overwriteOpeningHours = true;
+    }
+
+    public void stopOverwriteOpeningHours(){
+        this.overwriteOpeningHours = false;
     }
 
     //Dish Aggregate
@@ -69,7 +92,7 @@ public class Restaurant {
         return newDish;
     }
 
-    public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state){
+    public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state) {
         Dish newDish = new Dish(new DishId(dishId), dishName, state, description);
         this.menu.add(newDish);
 
@@ -78,9 +101,9 @@ public class Restaurant {
         return newDish;
     }
 
-    public Dish updateDish(DishId id, String name, String description){
+    public Dish updateDish(DishId id, String name, String description) {
         Dish dish = this.getDish(id);
-        dish.updateDish(name,description);
+        dish.updateDish(name, description);
         return dish;
     }
 
@@ -99,18 +122,18 @@ public class Restaurant {
     }
 
     //OpeningHours Aggregate
-    public RestaurantOpeningHours addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end){
-        RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day,start,end);
+    public RestaurantOpeningHours addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end) {
+        RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day, start, end);
         if (!openingHours.isEmpty()) {
             if (checkOpeningHoursOverlap(newOpeningHours)) {
-                throw new IllegalArgumentException("These hours overlap with existing hours");
+                throw new IllegalArgumentException("The new hours overlap with existing hours");
             }
         }
         openingHours.add(newOpeningHours);
         return newOpeningHours;
     }
 
-    private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh){
+    private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh) {
         return openingHours.stream()
                 .filter(roh -> roh.getDay().equals(newRoh.getDay()))
                 .anyMatch(roh -> roh.getOpeningTime().isBefore(newRoh.getClosingTime()) ||
@@ -148,6 +171,14 @@ public class Restaurant {
 
     public PriceCriteria getPriceCriteria() {
         return priceCriteria;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public boolean isOverwriteOpeningHours() {
+        return overwriteOpeningHours;
     }
 
     public List<Dish> getFullMenu() {

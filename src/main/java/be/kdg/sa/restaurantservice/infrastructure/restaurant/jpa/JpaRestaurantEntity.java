@@ -48,10 +48,15 @@ public class JpaRestaurantEntity {
     @OneToMany(mappedBy = "restaurant", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<JpaRestaurantOpeningHours> openingHours;
 
-    protected JpaRestaurantEntity(){
-    };
+    @Column
+    private boolean isOpen;
 
-    public JpaRestaurantEntity(UUID id, UUID ownerId, String name, String street, int number, int postalCode, String country, String contactEmail, RestaurantType type, String logo) {
+    @Column
+    private boolean overwriteOpeningHours;
+
+    protected JpaRestaurantEntity(){}
+
+    public JpaRestaurantEntity(UUID id, UUID ownerId, String name, String street, int number, int postalCode, String country, String contactEmail, RestaurantType type, String logo, boolean isOpen, boolean overwriteOpeningHours) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
@@ -62,6 +67,8 @@ public class JpaRestaurantEntity {
         this.contactEmail = contactEmail;
         this.type = type;
         this.logo = logo;
+        this.isOpen = isOpen;
+        this.overwriteOpeningHours = overwriteOpeningHours;
     }
 
     public static JpaRestaurantEntity fromDomain(Restaurant restaurant){
@@ -76,7 +83,9 @@ public class JpaRestaurantEntity {
                 restaurant.getAddress().getCountry(),
                 restaurant.getContactEmail(),
                 restaurant.getType(),
-                restaurant.getLogo()
+                restaurant.getLogo(),
+                restaurant.isOpen(),
+                restaurant.isOverwriteOpeningHours()
                 );
 
         //Filling the Jpa Menu
@@ -103,14 +112,15 @@ public class JpaRestaurantEntity {
                 contactEmail,
                 type,
                 new PriceCriteria(){},
-                logo
+                logo,
+                isOpen,
+                overwriteOpeningHours
         );
         menu.forEach(jpaDish ->
             restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState()));
 
         openingHours.forEach(jpaRoh ->
                 restaurant.addOpeningHours(jpaRoh.getDay(), jpaRoh.getOpeningTime(), jpaRoh.getClosingTime()));
-
         return restaurant;
     }
 
