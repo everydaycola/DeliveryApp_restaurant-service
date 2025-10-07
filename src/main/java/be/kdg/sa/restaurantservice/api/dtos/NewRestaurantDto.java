@@ -1,17 +1,14 @@
-package be.kdg.sa.restaurantservice.api;
+package be.kdg.sa.restaurantservice.api.dtos;
 
-import be.kdg.sa.restaurantservice.domain.restaurant.Address;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
-import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantOpeningHours;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantType;
 
 import java.util.List;
 import java.util.UUID;
 
-public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto address, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHours, String logo) {
-    public static RestaurantDto from(Restaurant restaurant) {
-        return new RestaurantDto(
-                restaurant.getId().id(),
+public record NewRestaurantDto( UUID ownerId, String name, AddressDto address, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHours, String logo) {
+    public static NewRestaurantDto from(Restaurant restaurant) {
+        return new NewRestaurantDto(
                 restaurant.getOwnerId().id(),
                 restaurant.getName(),
                 AddressDto.from(restaurant.getAddress()),
@@ -19,6 +16,6 @@ public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto addre
                 restaurant.getType(),
                 restaurant.getOpeningHours().stream().map(RestaurantOpeningHoursDto::from).toList(),
                 restaurant.getLogo()
-                );
+        );
     }
 }

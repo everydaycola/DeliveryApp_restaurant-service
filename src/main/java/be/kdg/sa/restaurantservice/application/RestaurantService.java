@@ -1,12 +1,11 @@
 package be.kdg.sa.restaurantservice.application;
 
-import be.kdg.sa.restaurantservice.api.AddressDto;
-import be.kdg.sa.restaurantservice.api.RestaurantOpeningHoursDto;
+import be.kdg.sa.restaurantservice.api.dtos.AddressDto;
+import be.kdg.sa.restaurantservice.api.dtos.RestaurantOpeningHoursDto;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

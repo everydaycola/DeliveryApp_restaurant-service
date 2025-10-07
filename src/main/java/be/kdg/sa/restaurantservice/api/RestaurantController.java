@@ -1,5 +1,8 @@
 package be.kdg.sa.restaurantservice.api;
 
+import be.kdg.sa.restaurantservice.api.dtos.DishDto;
+import be.kdg.sa.restaurantservice.api.dtos.NewRestaurantDto;
+import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
@@ -27,7 +30,7 @@ public class RestaurantController {
     //POST
     //Restaurant
     @PostMapping
-    public ResponseEntity<RestaurantDto> create(@RequestBody RestaurantDto restaurantDto) {
+    public ResponseEntity<NewRestaurantDto> create(@RequestBody RestaurantDto restaurantDto) {
         Restaurant restaurant = restaurants.create(
                 ownerId,
                 restaurantDto.name(),
@@ -37,7 +40,7 @@ public class RestaurantController {
                 restaurantDto.openingHours(),
                 restaurantDto.logo());
 
-        RestaurantDto result = RestaurantDto.from(restaurant);
+        NewRestaurantDto result = NewRestaurantDto.from(restaurant);
 
         return ResponseEntity.ok(result);
     }

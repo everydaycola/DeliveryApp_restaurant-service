@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.api;
+package be.kdg.sa.restaurantservice.api.dtos;
 
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantOpeningHours;
 
