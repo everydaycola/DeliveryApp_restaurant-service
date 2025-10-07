@@ -83,3 +83,5 @@ Content-Type: application/json
 GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/75e82b8d-7a6d-4183-9d40-e8b9b1f61c1e
 
 ###
+
+//TODO: add more test for the missing controller methods
