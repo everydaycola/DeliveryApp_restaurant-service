@@ -118,7 +118,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
 
         Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
-        restaurant.open(isOpen);
+        restaurant.open(open);
 
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
