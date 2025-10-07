@@ -123,6 +123,16 @@ public class RestaurantController {
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
+    @PatchMapping("/{id}/resetOverwrite")
+    public ResponseEntity<RestaurantDto> stopOpeningHoursOverwrite(@PathVariable final UUID id){
+        final RestaurantId restaurantId = new RestaurantId(id);
+
+        Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
+        restaurant.stopOverwriteOpeningHours();
+
+        return ResponseEntity.ok(RestaurantDto.from(restaurant));
+    }
+
     //Dishes
     @PatchMapping("/{id}/menu/{dishId}")
     public ResponseEntity<DishDto> updateDish(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
