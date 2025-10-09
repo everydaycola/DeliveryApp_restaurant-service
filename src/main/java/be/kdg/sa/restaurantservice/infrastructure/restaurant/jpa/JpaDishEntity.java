@@ -27,13 +27,17 @@ public class JpaDishEntity {
     @Column
     private String description;
 
+    @Column
+    private double price;
+
     protected JpaDishEntity(){}
 
-    public JpaDishEntity(UUID id, String name, DishState state, String description) {
+    public JpaDishEntity(UUID id, String name, DishState state, String description, double price) {
         this.id = id;
         this.name = name;
         this.state = state;
         this.description = description;
+        this.price = price;
     }
 
     static JpaDishEntity fromDomain(Dish dish){
@@ -41,7 +45,8 @@ public class JpaDishEntity {
                 dish.getId().id(),
                 dish.getName(),
                 dish.getState(),
-                dish.getDescription()
+                dish.getDescription(),
+                dish.getPrice()
         );
     }
 
@@ -63,5 +68,9 @@ public class JpaDishEntity {
 
     public void setRestaurant(JpaRestaurantEntity restaurant) {
         this.restaurant = restaurant;
+    }
+
+    public double getPrice() {
+        return price;
     }
 }

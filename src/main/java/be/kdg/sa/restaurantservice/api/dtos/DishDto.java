@@ -5,8 +5,8 @@ import be.kdg.sa.restaurantservice.domain.dish.DishState;
 
 import java.util.UUID;
 
-public record DishDto(UUID id, String name, String description, DishState state) {
+public record DishDto(UUID id, String name, String description, DishState state, double price) {
     public static DishDto from(Dish dish){
-        return new DishDto(dish.getId().id(), dish.getName(), dish.getDescription(), dish.getState());
+        return new DishDto(dish.getId().id(), dish.getName(), dish.getDescription(), dish.getState(), dish.getPrice());
     }
 }

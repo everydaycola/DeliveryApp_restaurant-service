@@ -83,8 +83,8 @@ public class Restaurant {
     }
 
     //Dish Aggregate
-    public Dish addDish(String dishName, String description) {
-        Dish newDish = new Dish(DishId.create(), dishName, description);
+    public Dish addDish(String dishName, String description, double price) {
+        Dish newDish = new Dish(DishId.create(), dishName, description, price);
         this.menu.add(newDish);
 
         log.info("New dish {} added to {}", newDish.getName(), this.getName());
@@ -92,8 +92,8 @@ public class Restaurant {
         return newDish;
     }
 
-    public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state) {
-        Dish newDish = new Dish(new DishId(dishId), dishName, state, description);
+    public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state, double price) {
+        Dish newDish = new Dish(new DishId(dishId), dishName, state, description, price);
         this.menu.add(newDish);
 
         log.info("Dish {} added to {} from repository", newDish.getName(), this.getName());

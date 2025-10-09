@@ -50,7 +50,7 @@ public class RestaurantController {
     public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody DishDto dishDto){
         final RestaurantId restaurantId = new RestaurantId(id);
 
-        Dish dish = restaurants.createDish(restaurantId, dishDto.name(), dishDto.description());
+        Dish dish = restaurants.createDish(restaurantId, dishDto.name(), dishDto.description(), dishDto.price());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }

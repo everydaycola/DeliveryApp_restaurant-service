@@ -36,9 +36,9 @@ public class RestaurantService {
     }
 
     //Dish
-    public Dish createDish(RestaurantId id, String dishName, String description){
+    public Dish createDish(RestaurantId id, String dishName, String description, double price){
         Restaurant restaurant = restaurants.findByIdWithMenu(id).orElseThrow(id::notFound);
-        Dish dish = restaurant.addDish(dishName, description);
+        Dish dish = restaurant.addDish(dishName, description, price);
         restaurants.save(restaurant);
         return dish;
     }

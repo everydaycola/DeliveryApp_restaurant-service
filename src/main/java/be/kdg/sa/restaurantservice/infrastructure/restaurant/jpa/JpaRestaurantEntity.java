@@ -117,7 +117,7 @@ public class JpaRestaurantEntity {
                 overwriteOpeningHours
         );
         menu.forEach(jpaDish ->
-            restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState()));
+            restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState(), jpaDish.getPrice()));
 
         openingHours.forEach(jpaRoh ->
                 restaurant.addOpeningHours(jpaRoh.getDay(), jpaRoh.getOpeningTime(), jpaRoh.getClosingTime()));

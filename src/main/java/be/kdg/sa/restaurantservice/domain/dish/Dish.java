@@ -5,19 +5,22 @@ public class Dish {
     private String name;
     private DishState state;
     private String description;
+    private double price;
 
-    public Dish(DishId id, String name, String description) {
+    public Dish(DishId id, String name, String description, double price) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.price = price;
         this.state = DishState.NOT_PUBLISHED;
     }
 
-    public Dish(DishId id, String name, DishState state, String description) {
+    public Dish(DishId id, String name, DishState state, String description, double price) {
         this.id = id;
         this.name = name;
         this.state = state;
         this.description = description;
+        this.price = price;
     }
 
     public Dish updateDish(String name, String description){
@@ -44,5 +47,9 @@ public class Dish {
 
     public DishState getState() {
         return state;
+    }
+
+    public double getPrice() {
+        return price;
     }
 }

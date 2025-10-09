@@ -16,7 +16,6 @@ public interface JpaRestaurantRepository extends JpaRepository<JpaRestaurantEnti
             """)
     Optional<JpaRestaurantEntity> findByIdWithMenu(UUID id);
 
-    //TODO: test this
     @Query(value = """
             select r
             from JpaRestaurantEntity r
