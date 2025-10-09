@@ -1,6 +1,7 @@
 package be.kdg.sa.restaurantservice.infrastructure.restaurant.jpa;
 
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
+import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.MeanPriceCriteriaCalculator;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -111,10 +112,10 @@ public class JpaRestaurantEntity {
                 new Address(street, number, postalCode, country),
                 contactEmail,
                 type,
-                new PriceCriteria(){},
                 logo,
                 isOpen,
-                overwriteOpeningHours
+                overwriteOpeningHours,
+                new MeanPriceCriteriaCalculator()
         );
         menu.forEach(jpaDish ->
             restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState(), jpaDish.getPrice()));

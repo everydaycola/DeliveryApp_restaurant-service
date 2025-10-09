@@ -3,6 +3,8 @@ package be.kdg.sa.restaurantservice.domain.restaurant;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
+import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteria;
+import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteriaCalculator;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -26,13 +28,14 @@ public class Restaurant {
     private RestaurantType type;
     private List<RestaurantOpeningHours> openingHours;
     private PriceCriteria priceCriteria;
+    private PriceCriteriaCalculator priceCriteriaCalculator;
     private List<Dish> menu;
     private String logo;
     private boolean isOpen;
     private boolean overwriteOpeningHours;
     //Orders
 
-    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
+    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, PriceCriteriaCalculator priceCriteriaCalculator) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
@@ -44,25 +47,28 @@ public class Restaurant {
         this.menu = new ArrayList<>();
         this.isOpen = false;
         this.overwriteOpeningHours = false;
+        this.priceCriteriaCalculator = priceCriteriaCalculator;
+        calculatePriceCriteria(priceCriteriaCalculator);
     }
 
-    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, PriceCriteria priceCriteria, String logo, boolean isOpen, boolean overwriteOpeningHours) {
+    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, boolean isOpen, boolean overwriteOpeningHours, PriceCriteriaCalculator priceCriteriaCalculator) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
         this.address = address;
         this.contactEmail = contactEmail;
         this.type = type;
-        this.priceCriteria = priceCriteria;
         this.logo = logo;
         this.openingHours = new ArrayList<>();
         this.menu = new ArrayList<>();
         this.isOpen = isOpen;
         this.overwriteOpeningHours = overwriteOpeningHours;
+        this.priceCriteriaCalculator = priceCriteriaCalculator;
+        calculatePriceCriteria(priceCriteriaCalculator);
     }
 
-    public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
-        return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo);
+    public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, PriceCriteriaCalculator priceCriteriaCalculator) {
+        return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo, priceCriteriaCalculator);
     }
 
     public void checkIfOpen() {
@@ -82,6 +88,11 @@ public class Restaurant {
         this.overwriteOpeningHours = false;
     }
 
+    private void calculatePriceCriteria(PriceCriteriaCalculator priceCriteriaCalculator) {
+        this.priceCriteria = priceCriteriaCalculator.Calculate(menu);
+        log.info("PriceCriteria of {} set to {}",this.name, this.priceCriteria);
+    }
+
     //Dish Aggregate
     public Dish addDish(String dishName, String description, double price) {
         Dish newDish = new Dish(DishId.create(), dishName, description, price);
@@ -96,6 +107,8 @@ public class Restaurant {
         Dish newDish = new Dish(new DishId(dishId), dishName, state, description, price);
         this.menu.add(newDish);
 
+        calculatePriceCriteria(priceCriteriaCalculator);
+
         log.info("Dish {} added to {} from repository", newDish.getName(), this.getName());
 
         return newDish;
@@ -104,6 +117,7 @@ public class Restaurant {
     public Dish updateDish(DishId id, String name, String description) {
         Dish dish = this.getDish(id);
         dish.updateDish(name, description);
+        calculatePriceCriteria(priceCriteriaCalculator);
         return dish;
     }
 

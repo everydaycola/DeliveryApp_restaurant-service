@@ -6,6 +6,7 @@ import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
+import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.MeanPriceCriteriaCalculator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class RestaurantService {
         Address address = new Address(addressDto.street(), addressDto.number(), addressDto.postalCode(), addressDto.country());
 
         //Create Restaurant
-        final Restaurant restaurant = Restaurant.newInstance(ownerId, name, address, contactEmail, type, logo);
+        final Restaurant restaurant = Restaurant.newInstance(ownerId, name, address, contactEmail, type, logo, new MeanPriceCriteriaCalculator());
 
         //Convert RestaurantOpeningHoursDto -> RestaurantOpeningHours
         openingHoursDtos.forEach(rohDto -> restaurant.addOpeningHours(rohDto.day(),rohDto.openingTime(), rohDto.closingTime()));
