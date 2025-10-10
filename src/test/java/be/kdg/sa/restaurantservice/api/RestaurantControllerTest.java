@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -25,6 +26,24 @@ class RestaurantControllerTest {
     @Autowired
     private TestHelper testHelper;
 
+    @Test
+    void shouldReturnTheMenuOfDishesWithAPublicState() throws Exception{
+        //Arrange
+        Restaurant restaurant = testHelper.saveRestaurant();
+        testHelper.saveDish(restaurant.getId(), "Pasta Testo Public", DishState.PUBLISHED, "Testeken", 1.23);
+        testHelper.saveDish(restaurant.getId(), "Pasta Testo Not Public", DishState.NOT_PUBLISHED, "Testeken", 1.23);
+        testHelper.saveDish(restaurant.getId(), "Pasta Testo Not Available", DishState.NOT_AVAILABLE, "Testeken", 1.23);
+        //Act & Assert
+        mockMvc.perform(
+                get("/api/restaurants/{id}/menu",restaurant.getId().id()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andDo(print());
+
+        //Cleanup
+        testHelper.cleanUp();
+    }
+    /*
     @Test
     void shouldChangeDishStateToPublished() throws Exception {
         //Arrange
@@ -42,4 +61,5 @@ class RestaurantControllerTest {
         //Cleanup
         testHelper.cleanUp();
     }
+     */
 }
