@@ -4,6 +4,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.*;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.MeanPriceCriteriaCalculator;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,6 +71,8 @@ public class JpaRestaurantEntity {
         this.logo = logo;
         this.isOpen = isOpen;
         this.overwriteOpeningHours = overwriteOpeningHours;
+        this.menu = new ArrayList<>();
+        this.openingHours = new ArrayList<>();
     }
 
     public static JpaRestaurantEntity fromDomain(Restaurant restaurant){
