@@ -27,6 +27,11 @@ public class TestHelper {
         return restaurantEntity.toDomain();
     }
 
+    public Restaurant saveRestaurant(Restaurant restaurant){
+        jpaRestaurantRepository.save(JpaRestaurantEntity.fromDomain(restaurant));
+        return restaurant;
+    }
+
     public void saveDish(RestaurantId restaurantId, String name, DishState state, String description, double price ){
         JpaRestaurantEntity restaurantEntity = jpaRestaurantRepository.findByIdWithMenu(restaurantId.id()).orElseThrow(RuntimeException::new);
         JpaDishEntity dishEntity = new JpaDishEntity(UUID.randomUUID(), name, state, description, price);

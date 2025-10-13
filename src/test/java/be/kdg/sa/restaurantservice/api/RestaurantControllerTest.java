@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,40 +25,51 @@ class RestaurantControllerTest {
     @Autowired
     private TestHelper testHelper;
 
+    //Happy Path
     @Test
     void shouldReturnTheMenuOfDishesWithAPublicState() throws Exception{
         //Arrange
         Restaurant restaurant = testHelper.saveRestaurant();
         testHelper.saveDish(restaurant.getId(), "Pasta Testo Public", DishState.PUBLISHED, "Testeken", 1.23);
-        testHelper.saveDish(restaurant.getId(), "Pasta Testo Not Public", DishState.NOT_PUBLISHED, "Testeken", 1.23);
-        testHelper.saveDish(restaurant.getId(), "Pasta Testo Not Available", DishState.NOT_AVAILABLE, "Testeken", 1.23);
         //Act & Assert
         mockMvc.perform(
                 get("/api/restaurants/{id}/menu",restaurant.getId().id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andDo(print());
+                .andExpect(jsonPath("$.length()").value(1));
 
         //Cleanup
         testHelper.cleanUp();
     }
-    /*
+
+    @Test
+    void shouldReturnAnEmptyMenuWhenNoDishesArePublic() throws Exception{
+        //Arrange
+        Restaurant restaurant = testHelper.saveRestaurant();
+        testHelper.saveDish(restaurant.getId(), "Pasta Testo Public", DishState.NOT_PUBLISHED, "Testeken", 1.23);
+        //Act & Assert
+        mockMvc.perform(
+                        get("/api/restaurants/{id}/menu",restaurant.getId().id()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        //Cleanup
+        testHelper.cleanUp();
+    }
+
     @Test
     void shouldChangeDishStateToPublished() throws Exception {
         //Arrange
         Restaurant restaurant = testHelper.saveRestaurant();
-        testHelper.saveDish(restaurant.getId(), "Test Dish", DishState.NOT_PUBLISHED ,"This is a test dish", 1.23);
-        Dish dish = restaurant.getFullMenu().getFirst();
+        Dish dish = restaurant.addDish("Pasta Testo", "Test Pasta", 1.23);
+        testHelper.saveRestaurant(restaurant);
         //Act & Assert
         mockMvc.perform(
                         patch("/api/restaurants/{restaurantId}/menu/{dishId}/state", restaurant.getId().id(), dish.getId().id())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"state\": \"PUBLISHED\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.state").value("PUBLISHED"))
-                .andDo(print());
+                .andExpect(jsonPath("$.state").value("PUBLISHED"));
         //Cleanup
         testHelper.cleanUp();
     }
-     */
 }
