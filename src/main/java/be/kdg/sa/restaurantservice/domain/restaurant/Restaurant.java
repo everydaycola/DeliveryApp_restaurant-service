@@ -72,6 +72,9 @@ public class Restaurant {
     }
 
     public void checkIfOpen() {
+
+        log.info("Checking if Restaurant {} is open", this.name);
+
         LocalDateTime now = LocalDateTime.now();
         isOpen = openingHours.stream()
                 .filter(roh -> roh.getDay().equals(now.getDayOfWeek()))
@@ -82,10 +85,14 @@ public class Restaurant {
     public void open(boolean isOpen){
         this.isOpen = isOpen;
         this.overwriteOpeningHours = true;
+
+        log.info("Restaurant {} is now {} and standard opening hours are overwritten", this.name, isOpen? "open" : "closed");
     }
 
     public void stopOverwriteOpeningHours(){
         this.overwriteOpeningHours = false;
+
+        log.info("Restaurant {} returns to normal opening hours", this.name);
     }
 
     private void calculatePriceCriteria(PriceCriteriaCalculator priceCriteriaCalculator) {
@@ -118,6 +125,9 @@ public class Restaurant {
         Dish dish = this.getDish(id);
         dish.updateDish(name, description);
         calculatePriceCriteria(priceCriteriaCalculator);
+
+        log.info("Dish {} updated", dish.getId());
+
         return dish;
     }
 
@@ -143,11 +153,13 @@ public class Restaurant {
                 throw new IllegalArgumentException("The new hours overlap with existing hours");
             }
         }
+        log.info("New opening hours succesfully added");
         openingHours.add(newOpeningHours);
         return newOpeningHours;
     }
 
     private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh) {
+        log.info("Checking if new hours overlap with current hours");
         return openingHours.stream()
                 .filter(roh -> roh.getDay().equals(newRoh.getDay()))
                 .anyMatch(roh -> roh.getOpeningTime().isBefore(newRoh.getClosingTime()) ||
