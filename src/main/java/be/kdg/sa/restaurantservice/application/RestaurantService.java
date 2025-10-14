@@ -72,6 +72,11 @@ public class RestaurantService {
         return restos;
     }
 
+    //Dish
+    public List<Dish> findMenuWithDishState(RestaurantId restaurantId, DishState state){
+        return restaurants.findDishesByDishState(restaurantId, state).orElseThrow();
+    }
+
     //Update
     //Restaurant
     private void checkIfOpenAndUpdate(Restaurant restaurant){
@@ -79,10 +84,6 @@ public class RestaurantService {
         restaurants.save(restaurant);
     }
 
-    private void updateOpen(Restaurant restaurant, boolean isOpen){
-        restaurant.open(isOpen);
-        restaurants.save(restaurant);
-    }
     //Dish
     public Dish UpdateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
         Restaurant restaurant = findByIdWithMenu(restaurantId);
@@ -102,4 +103,15 @@ public class RestaurantService {
        return dish;
     }
 
+        public List<Dish> publishReadyDishes(RestaurantId restaurantId){
+            Restaurant restaurant = findByIdWithMenu(restaurantId);
+            List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
+
+            List<Dish> newPublicDished = readyDishes.stream()
+                    .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED)).toList();
+
+            restaurants.save(restaurant);
+
+            return newPublicDished;
+        }
 }

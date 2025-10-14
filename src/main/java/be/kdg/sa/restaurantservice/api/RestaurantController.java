@@ -6,6 +6,7 @@ import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
+import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
@@ -91,7 +92,7 @@ public class RestaurantController {
     @GetMapping("/{id}/menu")
     public ResponseEntity<List<DishDto>> findPublicMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findByIdWithMenu(restaurantId).getPublicMenu();
+        List<Dish> allDishes = restaurants.findMenuWithDishState(restaurantId, DishState.PUBLISHED);
 
         List<DishDto> dtos = allDishes.stream()
                 .map(DishDto::from)
@@ -152,5 +153,18 @@ public class RestaurantController {
         Dish dish = restaurants.UpdateDishState(restaurantId, dId, dishDto.state());
 
         return ResponseEntity.ok(DishDto.from(dish));
+    }
+
+    @PatchMapping("/{id}/menu/publish_ready")
+    public ResponseEntity<List<DishDto>> publishReadyDishes(@PathVariable final UUID id){
+        final RestaurantId restaurantId = new RestaurantId(id);
+
+        List<Dish> dishes = restaurants.publishReadyDishes(restaurantId);
+
+        List<DishDto> dtos = dishes.stream()
+                .map(DishDto::from)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
     }
 }
