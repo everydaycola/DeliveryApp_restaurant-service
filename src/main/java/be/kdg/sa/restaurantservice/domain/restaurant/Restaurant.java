@@ -216,7 +216,6 @@ public class Restaurant {
         return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
     }
 
-
     public String getLogo() {
         return logo;
     }

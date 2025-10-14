@@ -72,7 +72,8 @@ public class RestaurantService {
         return restos;
     }
 
-    public List<Dish> findMenuOnDishState(RestaurantId restaurantId,DishState state){
+    //Dish
+    public List<Dish> findMenuWithDishState(RestaurantId restaurantId, DishState state){
         return restaurants.findDishesByDishState(restaurantId, state).orElseThrow();
     }
 
@@ -102,4 +103,15 @@ public class RestaurantService {
        return dish;
     }
 
+        public List<Dish> publishReadyDishes(RestaurantId restaurantId){
+            Restaurant restaurant = findByIdWithMenu(restaurantId);
+            List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
+
+            List<Dish> newPublicDished = readyDishes.stream()
+                    .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED)).toList();
+
+            restaurants.save(restaurant);
+
+            return newPublicDished;
+        }
 }

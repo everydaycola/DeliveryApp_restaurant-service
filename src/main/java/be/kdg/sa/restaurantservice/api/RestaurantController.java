@@ -92,7 +92,7 @@ public class RestaurantController {
     @GetMapping("/{id}/menu")
     public ResponseEntity<List<DishDto>> findPublicMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findMenuOnDishState(restaurantId, DishState.PUBLISHED);
+        List<Dish> allDishes = restaurants.findMenuWithDishState(restaurantId, DishState.PUBLISHED);
 
         List<DishDto> dtos = allDishes.stream()
                 .map(DishDto::from)
@@ -153,5 +153,18 @@ public class RestaurantController {
         Dish dish = restaurants.UpdateDishState(restaurantId, dId, dishDto.state());
 
         return ResponseEntity.ok(DishDto.from(dish));
+    }
+
+    @PatchMapping("/{id}/menu/publish_ready")
+    public ResponseEntity<List<DishDto>> publishReadyDishes(@PathVariable final UUID id){
+        final RestaurantId restaurantId = new RestaurantId(id);
+
+        List<Dish> dishes = restaurants.publishReadyDishes(restaurantId);
+
+        List<DishDto> dtos = dishes.stream()
+                .map(DishDto::from)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
     }
 }
