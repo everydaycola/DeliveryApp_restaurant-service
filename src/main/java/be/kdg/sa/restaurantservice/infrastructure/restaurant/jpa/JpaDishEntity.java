@@ -1,6 +1,7 @@
 package be.kdg.sa.restaurantservice.infrastructure.restaurant.jpa;
 
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
+import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import jakarta.persistence.*;
 
@@ -47,6 +48,16 @@ public class JpaDishEntity {
                 dish.getState(),
                 dish.getDescription(),
                 dish.getPrice()
+        );
+    }
+
+    public Dish toDomain(){
+        return new Dish(
+                new DishId(this.id),
+                this.name,
+                this.state,
+                this.description,
+                this.price
         );
     }
 

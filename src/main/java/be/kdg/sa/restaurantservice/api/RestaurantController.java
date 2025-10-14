@@ -6,6 +6,7 @@ import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
+import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
@@ -91,7 +92,7 @@ public class RestaurantController {
     @GetMapping("/{id}/menu")
     public ResponseEntity<List<DishDto>> findPublicMenu(@PathVariable final UUID id) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findByIdWithMenu(restaurantId).getPublicMenu();
+        List<Dish> allDishes = restaurants.findMenuOnDishState(restaurantId, DishState.PUBLISHED);
 
         List<DishDto> dtos = allDishes.stream()
                 .map(DishDto::from)

@@ -5,6 +5,7 @@ import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteria;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteriaCalculator;
+import jdk.jshell.spi.ExecutionControl;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -209,10 +210,6 @@ public class Restaurant {
 
     public List<Dish> getFullMenu() {
         return menu;
-    }
-
-    public List<Dish> getPublicMenu() {
-        return menu.stream().filter(dish -> dish.getState() == DishState.PUBLISHED).toList();
     }
 
     public Dish getDish(DishId dishId) {

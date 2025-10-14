@@ -72,6 +72,10 @@ public class RestaurantService {
         return restos;
     }
 
+    public List<Dish> findMenuOnDishState(RestaurantId restaurantId,DishState state){
+        return restaurants.findDishesByDishState(restaurantId, state).orElseThrow();
+    }
+
     //Update
     //Restaurant
     private void checkIfOpenAndUpdate(Restaurant restaurant){
@@ -79,10 +83,6 @@ public class RestaurantService {
         restaurants.save(restaurant);
     }
 
-    private void updateOpen(Restaurant restaurant, boolean isOpen){
-        restaurant.open(isOpen);
-        restaurants.save(restaurant);
-    }
     //Dish
     public Dish UpdateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
         Restaurant restaurant = findByIdWithMenu(restaurantId);

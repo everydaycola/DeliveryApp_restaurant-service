@@ -1,8 +1,11 @@
 package be.kdg.sa.restaurantservice.infrastructure.restaurant;
 
+import be.kdg.sa.restaurantservice.domain.dish.Dish;
+import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantRepository;
+import be.kdg.sa.restaurantservice.infrastructure.restaurant.jpa.JpaDishEntity;
 import be.kdg.sa.restaurantservice.infrastructure.restaurant.jpa.JpaRestaurantEntity;
 import be.kdg.sa.restaurantservice.infrastructure.restaurant.jpa.JpaRestaurantRepository;
 import org.springframework.stereotype.Repository;
@@ -38,11 +41,19 @@ public class DbRestaurantRepository implements RestaurantRepository {
                 .toList();
     }
 
-    public Optional<Restaurant> findByIdWithMenu(RestaurantId restaurantId){
+    @Override
+    public Optional<Restaurant> findByIdWithMenu(RestaurantId restaurantId) {
         return this.jpaRestaurantRepository.findByIdWithMenu(restaurantId.id()).map(JpaRestaurantEntity::toDomain);
     }
 
-    public Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId){
+    @Override
+    public Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId) {
         return this.jpaRestaurantRepository.findByIdWithMenuAndOpeningHours(restaurantId.id()).map(JpaRestaurantEntity::toDomain);
+    }
+
+    @Override
+    public Optional<List<Dish>> findDishesByDishState(RestaurantId restaurantId, DishState state) {
+        return this.jpaRestaurantRepository.findDishesByDishState(restaurantId.id(), state).map(
+                jpaDishEntities -> jpaDishEntities.stream().map(JpaDishEntity::toDomain).toList());
     }
 }
