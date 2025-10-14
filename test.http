@@ -52,7 +52,7 @@ Content-Type: application/json
 GET http://localhost:8081/api/restaurants
 
 ### Get a specific restaurant by ID
-GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef
+GET http://localhost:8081/api/restaurants/dab961f7-5441-4827-a55e-7fcbc86a8fb2
 
 ### Get the full menu of a restaurant
 GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/full
