@@ -11,7 +11,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
-import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.TestMessage;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.HelloMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -176,6 +176,6 @@ public class RestaurantController {
     //Messaging (RabbitMQ)
     @PostMapping("/message/test")
     public void testMessage(){
-        rabbitTemplate.convertAndSend(RabbitMQTopology.DEMO_EXCHANGE_NAME, "say.hello.test", new TestMessage("Test Message"));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.DEMO_EXCHANGE_NAME, "say.hello.test", new HelloMessage("Test Message"));
     }
 }
