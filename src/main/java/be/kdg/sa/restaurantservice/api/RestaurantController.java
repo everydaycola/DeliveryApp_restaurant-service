@@ -176,6 +176,6 @@ public class RestaurantController {
     //Messaging (RabbitMQ)
     @PostMapping("/message/test")
     public void testMessage(){
-        rabbitTemplate.convertAndSend(RabbitMQTopology.DEMO_EXCHANGE_NAME, "say.hello.test", new HelloMessage("Test Message"));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME, "say.restaurant.test", new HelloMessage("Test Message"));
     }
 }
