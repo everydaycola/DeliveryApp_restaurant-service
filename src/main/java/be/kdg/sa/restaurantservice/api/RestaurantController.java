@@ -10,6 +10,9 @@ import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.TestMessage;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +26,11 @@ public class RestaurantController {
     private static final OwnerId ownerId = new OwnerId(UUID.randomUUID());
 
     private final RestaurantService restaurants;
+    private final RabbitTemplate rabbitTemplate;
 
-    public RestaurantController(RestaurantService restaurants) {
+    public RestaurantController(RestaurantService restaurants, RabbitTemplate rabbitTemplate) {
         this.restaurants = restaurants;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     //POST
@@ -166,5 +171,11 @@ public class RestaurantController {
                 .toList();
 
         return ResponseEntity.ok(dtos);
+    }
+
+    //Messaging (RabbitMQ)
+    @PostMapping("/message/test")
+    public void testMessage(){
+        rabbitTemplate.convertAndSend(RabbitMQTopology.DEMO_EXCHANGE_NAME, "say.hello.test", new TestMessage("Test Message"));
     }
 }
