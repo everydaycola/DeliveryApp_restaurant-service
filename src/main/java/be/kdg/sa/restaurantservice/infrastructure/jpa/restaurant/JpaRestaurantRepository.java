@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.infrastructure.jpa;
+package be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant;
 
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,11 +1,10 @@
 package be.kdg.sa.restaurantservice.domain.restaurant;
-
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteria;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteriaCalculator;
-import jdk.jshell.spi.ExecutionControl;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -21,20 +20,31 @@ import java.util.UUID;
 public class Restaurant {
     private static final int MAX_DISHES = 10;
 
+    //Getters
+    @Getter
     private RestaurantId id;
+    @Getter
     private OwnerId ownerId;
+    @Getter
     private String name;
+    @Getter
     private Address address;
+    @Getter
     private String contactEmail;
+    @Getter
     private RestaurantType type;
+    @Getter
     private List<RestaurantOpeningHours> openingHours;
+    @Getter
     private PriceCriteria priceCriteria;
     private PriceCriteriaCalculator priceCriteriaCalculator;
     private List<Dish> menu;
+    @Getter
     private String logo;
+    @Getter
     private boolean isOpen;
+    @Getter
     private boolean overwriteOpeningHours;
-    //Orders
 
     private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, PriceCriteriaCalculator priceCriteriaCalculator) {
         this.id = id;
@@ -146,6 +156,14 @@ public class Restaurant {
         return dish;
     }
 
+    public List<Dish> getFullMenu() {
+        return menu;
+    }
+
+    public Dish getDish(DishId dishId) {
+        return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
+    }
+
     //OpeningHours Aggregate
     public RestaurantOpeningHours addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end) {
         RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day, start, end);
@@ -167,56 +185,4 @@ public class Restaurant {
                         roh.getClosingTime().isAfter(newRoh.getOpeningTime()));
     }
 
-    //Getters
-    public RestaurantId getId() {
-        return id;
-    }
-
-    public OwnerId getOwnerId() {
-        return ownerId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public String getContactEmail() {
-        return contactEmail;
-    }
-
-    public RestaurantType getType() {
-        return type;
-    }
-
-    public List<RestaurantOpeningHours> getOpeningHours() {
-        return openingHours;
-    }
-
-    public PriceCriteria getPriceCriteria() {
-        return priceCriteria;
-    }
-
-    public boolean isOpen() {
-        return isOpen;
-    }
-
-    public boolean isOverwriteOpeningHours() {
-        return overwriteOpeningHours;
-    }
-
-    public List<Dish> getFullMenu() {
-        return menu;
-    }
-
-    public Dish getDish(DishId dishId) {
-        return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
-    }
-
-    public String getLogo() {
-        return logo;
-    }
 }

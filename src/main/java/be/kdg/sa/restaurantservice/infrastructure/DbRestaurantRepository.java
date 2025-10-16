@@ -5,9 +5,9 @@ import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantRepository;
-import be.kdg.sa.restaurantservice.infrastructure.jpa.JpaDishEntity;
-import be.kdg.sa.restaurantservice.infrastructure.jpa.JpaRestaurantEntity;
-import be.kdg.sa.restaurantservice.infrastructure.jpa.JpaRestaurantRepository;
+import be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant.JpaDishEntity;
+import be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant.JpaRestaurantEntity;
+import be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant.JpaRestaurantRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
