@@ -111,7 +111,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
-        Dish dish = restaurants.findByIdWithMenu(restaurantId).getDish(dId);
+        Dish dish = restaurants.findDishById(restaurantId, dId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -145,7 +145,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
-        Dish dish = restaurants.UpdateDish(restaurantId, dId, dishDto.name(), dishDto.description());
+        Dish dish = restaurants.updateDish(restaurantId, dId, dishDto.name(), dishDto.description());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -155,7 +155,7 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
-        Dish dish = restaurants.UpdateDishState(restaurantId, dId, dishDto.state());
+        Dish dish = restaurants.updateDishState(restaurantId, dId, dishDto.state());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }

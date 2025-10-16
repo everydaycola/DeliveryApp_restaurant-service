@@ -1,6 +1,7 @@
 package be.kdg.sa.restaurantservice.infrastructure;
 
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
+import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
@@ -49,6 +50,11 @@ public class DbRestaurantRepository implements RestaurantRepository {
     @Override
     public Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId) {
         return this.jpaRestaurantRepository.findByIdWithMenuAndOpeningHours(restaurantId.id()).map(JpaRestaurantEntity::toDomain);
+    }
+
+    @Override public Optional <Dish> findDishById(RestaurantId restaurantId, DishId dishId) {
+        return this.jpaRestaurantRepository.findDishById(restaurantId.id(), dishId.id())
+                                           .map(JpaDishEntity::toDomain);
     }
 
     @Override
