@@ -74,7 +74,7 @@ public class RestaurantService {
 
     //Dish
     public List<Dish> findMenuWithDishState(RestaurantId restaurantId, DishState state){
-        return restaurants.findDishesByDishState(restaurantId, state).orElseThrow();
+        return restaurants.findDishesByDishState(restaurantId, state).orElseThrow(restaurantId::notFound);
     }
 
     //Update
@@ -85,7 +85,11 @@ public class RestaurantService {
     }
 
     //Dish
-    public Dish UpdateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
+    public Dish findDishById(RestaurantId restaurantId, DishId dishId) {
+        return restaurants.findDishById(restaurantId, dishId).orElseThrow(dishId::notFound);
+    }
+
+    public Dish updateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
         Restaurant restaurant = findByIdWithMenu(restaurantId);
         Dish dish = restaurant.updateDish(dishId, name, description);
 
@@ -94,7 +98,7 @@ public class RestaurantService {
         return dish;
     }
 
-    public Dish UpdateDishState(RestaurantId restaurantId, DishId dishId, DishState state){
+    public Dish updateDishState(RestaurantId restaurantId, DishId dishId, DishState state){
        Restaurant restaurant = findByIdWithMenu(restaurantId);
        Dish dish = restaurant.updateDishState(dishId, state);
 
@@ -103,15 +107,15 @@ public class RestaurantService {
        return dish;
     }
 
-        public List<Dish> publishReadyDishes(RestaurantId restaurantId){
-            Restaurant restaurant = findByIdWithMenu(restaurantId);
-            List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
+    public List<Dish> publishReadyDishes(RestaurantId restaurantId){
+        Restaurant restaurant = findByIdWithMenu(restaurantId);
+        List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
 
-            List<Dish> newPublicDished = readyDishes.stream()
-                    .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED)).toList();
+        List<Dish> newPublicDished = readyDishes.stream()
+                .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED)).toList();
 
-            restaurants.save(restaurant);
+        restaurants.save(restaurant);
 
-            return newPublicDished;
-        }
+        return newPublicDished;
+    }
 }

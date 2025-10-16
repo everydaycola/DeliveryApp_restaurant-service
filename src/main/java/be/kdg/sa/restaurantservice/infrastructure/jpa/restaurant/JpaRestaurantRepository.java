@@ -33,4 +33,11 @@ public interface JpaRestaurantRepository extends JpaRepository<JpaRestaurantEnti
             where d.restaurant.id = :restaurantId and d.state = :state
             """)
     Optional<List<JpaDishEntity>> findDishesByDishState(UUID restaurantId,DishState state);
+
+    @Query(value = """
+            select d
+            from JpaDishEntity d
+            where d.restaurant.id = :restaurantId and d.id = :dishId
+            """)
+    Optional<JpaDishEntity> findDishById(UUID restaurantId, UUID dishId);
 }
