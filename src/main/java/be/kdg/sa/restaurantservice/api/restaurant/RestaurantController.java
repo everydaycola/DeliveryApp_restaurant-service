@@ -1,8 +1,8 @@
-package be.kdg.sa.restaurantservice.api;
+package be.kdg.sa.restaurantservice.api.restaurant;
 
-import be.kdg.sa.restaurantservice.api.dtos.DishDto;
-import be.kdg.sa.restaurantservice.api.dtos.NewRestaurantDto;
-import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
+import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
+import be.kdg.sa.restaurantservice.api.restaurant.dtos.NewRestaurantDto;
+import be.kdg.sa.restaurantservice.api.restaurant.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;

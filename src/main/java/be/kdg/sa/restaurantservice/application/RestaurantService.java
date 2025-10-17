@@ -1,7 +1,7 @@
 package be.kdg.sa.restaurantservice.application;
 
-import be.kdg.sa.restaurantservice.api.dtos.AddressDto;
-import be.kdg.sa.restaurantservice.api.dtos.RestaurantOpeningHoursDto;
+import be.kdg.sa.restaurantservice.api.restaurant.dtos.AddressDto;
+import be.kdg.sa.restaurantservice.api.restaurant.dtos.RestaurantOpeningHoursDto;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;

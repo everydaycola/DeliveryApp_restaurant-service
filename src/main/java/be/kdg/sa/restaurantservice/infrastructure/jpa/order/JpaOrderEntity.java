@@ -11,17 +11,25 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
-@Entity @Table(name = "orders") public class JpaOrderEntity {
-    @Id @Column private UUID orderId;
+@Entity
+@Table(name = "orders")
+public class JpaOrderEntity {
+    @Id
+    @Column
+    private UUID orderId;
 
-    @Column private OrderStatus status;
+    @Column
+    private OrderStatus status;
 
-    @Column @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List <JpaOrderLineEntity> orderLines;
+    @Column
+    @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<JpaOrderLineEntity> orderLines;
 
-    @Column private UUID restaurantId;
+    @Column
+    private UUID restaurantId;
 
-    protected JpaOrderEntity() {}
+    protected JpaOrderEntity() {
+    }
 
     public JpaOrderEntity(UUID orderId, OrderStatus status, UUID restaurantId) {
         this.orderId = orderId;
@@ -34,7 +42,7 @@ import java.util.UUID;
         JpaOrderEntity jpaOrderEntity =
                 new JpaOrderEntity(order.getOrderId().id(), order.getStatus(), order.getRestaurantId().id());
 
-        List <JpaOrderLineEntity> jpaOrderEntities =
+        List<JpaOrderLineEntity> jpaOrderEntities =
                 order.getOrderLines().stream().map(JpaOrderLineEntity::fromDomain).toList();
         jpaOrderEntity.setOrderLines(jpaOrderEntities);
 
@@ -57,7 +65,7 @@ import java.util.UUID;
         return order;
     }
 
-    public void setOrderLines(List <JpaOrderLineEntity> orderLines) {
+    public void setOrderLines(List<JpaOrderLineEntity> orderLines) {
         this.orderLines = orderLines;
     }
 }
