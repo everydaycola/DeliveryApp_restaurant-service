@@ -26,3 +26,17 @@ Delivery-service:
 Opsplitsen wanneer:
 - Controller: altijd
 - Service: in het begin misschien nog niet maar als er meer specifiekere logica moet gebeuren wel 
+
+# V2
+## Pre coaching 19/10/2025
+### Geschatte Progress (in procent): 85%
+### status
+#### User Stories
+De US's van Restaurant en Delivery zijn zo goed als af, alleen moet er aan Order nog wel wat US gesloten worden.
+Dit komt vooral omdat we nog geen frontend gemaakt hebben in dat deel van de applicatie.
+#### Niet US gerelateerde vordering
+Zo goed als alle nieuwe leestof zit al wel deels in het project. 
+Alleen moet messaging nog deftig uitgewerkt worden en moeten wij nog aan de slag gaan met Keycloak.
+
+## Post coaching
+### Feedback
