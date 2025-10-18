@@ -9,7 +9,9 @@ import be.kdg.sa.restaurantservice.domain.restaurant.*;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.MeanPriceCriteriaCalculator;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 @Service
 public class RestaurantService {
@@ -117,5 +119,14 @@ public class RestaurantService {
         restaurants.save(restaurant);
 
         return newPublicDished;
+    }
+
+    public List<Dish> publishDishesOnSchedule(RestaurantId id , Date scheduledDate, List<DishId> dishIds){
+        Restaurant restaurant = findByIdWithMenu(id);
+
+        //restaurant is saved in PublishDishesTask to the repository
+        new Timer().schedule(new PublishDishesTask(restaurants,restaurant, dishIds), scheduledDate);
+
+        return dishIds.stream().map(restaurant::getDish).toList();
     }
 }

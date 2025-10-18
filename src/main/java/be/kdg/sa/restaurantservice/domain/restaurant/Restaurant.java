@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.UUID;
 
 @AggregateRoot
@@ -20,7 +21,6 @@ import java.util.UUID;
 public class Restaurant {
     private static final int MAX_DISHES = 10;
 
-    //Getters
     @Getter
     private RestaurantId id;
     @Getter
@@ -184,5 +184,4 @@ public class Restaurant {
                 .anyMatch(roh -> roh.getOpeningTime().isBefore(newRoh.getClosingTime()) ||
                         roh.getClosingTime().isAfter(newRoh.getOpeningTime()));
     }
-
 }

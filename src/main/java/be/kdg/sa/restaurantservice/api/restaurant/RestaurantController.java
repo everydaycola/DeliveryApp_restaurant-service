@@ -1,6 +1,7 @@
 package be.kdg.sa.restaurantservice.api.restaurant;
 
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
+import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishScheduleDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.NewRestaurantDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
@@ -16,6 +17,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -167,6 +169,19 @@ public class RestaurantController {
         List<Dish> dishes = restaurants.publishReadyDishes(restaurantId);
 
         List<DishDto> dtos = dishes.stream()
+                .map(DishDto::from)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PatchMapping("/{id}/menu/publish_schedule")
+    public ResponseEntity<List<DishDto>> publishDishesOnSchedule(@PathVariable final UUID id, @RequestBody DishScheduleDto dishScheduleDto){
+        final RestaurantId restaurantId = new RestaurantId(id);
+        List<DishId> dishIds = dishScheduleDto.dishIds().stream().map(DishId::new).toList();
+
+        List<Dish> updatedDishes = restaurants.publishDishesOnSchedule(restaurantId, dishScheduleDto.scheduledDate(), dishIds);
+        List<DishDto> dtos = updatedDishes.stream()
                 .map(DishDto::from)
                 .toList();
 
