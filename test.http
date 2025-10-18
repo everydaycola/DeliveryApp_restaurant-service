@@ -1,3 +1,8 @@
+@restaurant1 = dab961f7-5441-4827-a55e-7fcbc86a8fb2
+@resto1dish1 = 27756a48-0b85-4499-aadb-c08a97943263
+@resto1dish2 = 6c273939-faf5-4eca-988d-08b14533849e
+@resto1dish3 = 98be5020-eb67-49e0-815e-3b2f7e1808e0
+
 ### Create a new restaurant
 POST http://localhost:8081/api/restaurants
 Content-Type: application/json
@@ -52,13 +57,16 @@ Content-Type: application/json
 GET http://localhost:8081/api/restaurants
 
 ### Get a specific restaurant by ID
-GET http://localhost:8081/api/restaurants/dab961f7-5441-4827-a55e-7fcbc86a8fb2
+GET http://localhost:8081/api/restaurants/{{restaurant1}}
+
+### Get the public menu of a restaurant
+GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu
 
 ### Get the full menu of a restaurant
-GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/full
+GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu_full
 
 ### Create a new dish for a restaurant
-POST http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu
+POST http://localhost:8081/api/restaurants/{{restaurant1}}/menu
 Content-Type: application/json
 
 {
@@ -68,20 +76,70 @@ Content-Type: application/json
   "state": "NOT_AVAILABLE"
 }
 
-### Get the public menu of a restaurant
-GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu
+### Get a specific dish from a restaurant
+GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish1}}
 
 ### Update a dish's state
-PATCH http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/75e82b8d-7a6d-4183-9d40-e8b9b1f61c1e/state
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish3}}/state
 Content-Type: application/json
 
 {
   "state": "PUBLISHED"
 }
 
-### Get a specific dish from a restaurant
-GET http://localhost:8081/api/restaurants/4bb119d4-160f-4122-8760-fd5a14fb85ef/menu/75e82b8d-7a6d-4183-9d40-e8b9b1f61c1e
+### Open or close a restaurant
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}?open=true
+Content-Type: application/json
 
-###
+### Reset overwrite opening hours
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/resetOverwrite
+Content-Type: application/json
 
-//TODO: add more test for the missing controller methods
+### Update a dish (name & description)
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}
+Content-Type: application/json
+
+{
+  "name": "Updated Fettuccine Alfredo",
+  "description": "Freshly made creamy Alfredo sauce with herbs"
+}
+
+### Update dish1's state to ready for publishing (prep)
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish1}}/state
+Content-Type: application/json
+
+{
+  "state": "READY_FOR_PUBLISHING"
+}
+
+### Update dish2's state to ready for publishing (prep)
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}/state
+Content-Type: application/json
+
+{
+  "state": "READY_FOR_PUBLISHING"
+}
+
+### Publish all ready dishes
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/publish_ready
+Content-Type: application/json
+
+### Update dish2's state to ready for publishing
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}/state
+Content-Type: application/json
+
+{
+  "state": "READY_FOR_PUBLISHING"
+}
+
+### Schedule dishes for future publishing
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/publish_schedule
+Content-Type: application/json
+
+{
+  "scheduledDate": "2025-10-19T09:00:00+02:00",
+  "dishIds": [
+    "{{resto1dish2}}",
+    "{{resto1dish3}}"
+  ]
+}
