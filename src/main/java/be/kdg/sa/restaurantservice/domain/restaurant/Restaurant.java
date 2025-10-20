@@ -59,7 +59,6 @@ public class Restaurant {
         this.isOpen = false;
         this.overwriteOpeningHours = false;
         this.priceCriteriaCalculator = priceCriteriaCalculator;
-        calculatePriceCriteria(priceCriteriaCalculator);
     }
 
     public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, boolean isOpen, boolean overwriteOpeningHours, PriceCriteriaCalculator priceCriteriaCalculator) {
@@ -75,7 +74,6 @@ public class Restaurant {
         this.isOpen = isOpen;
         this.overwriteOpeningHours = overwriteOpeningHours;
         this.priceCriteriaCalculator = priceCriteriaCalculator;
-        calculatePriceCriteria(priceCriteriaCalculator);
     }
 
     public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, PriceCriteriaCalculator priceCriteriaCalculator) {
@@ -117,6 +115,8 @@ public class Restaurant {
         this.menu.add(newDish);
 
         log.info("New dish {} added to {}", newDish.getName(), this.getName());
+
+        this.calculatePriceCriteria(priceCriteriaCalculator);
 
         return newDish;
     }
