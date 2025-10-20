@@ -40,3 +40,33 @@ Alleen moet messaging nog deftig uitgewerkt worden en moeten wij nog aan de slag
 
 ## Post coaching
 ### Feedback
+Algemeen: Goed bezig
+#### _Restaurant_
+##### Restaurant Controller
+- Open: Skipt te service
+- UpdateDishState: andere naam (vb.:publish Dish)
+##### Order Controller (in Restaurant)
+Rabbit Template moet weg
+##### TimerTask
+Op de Spring manier: @Scheduled
+##### Restaurant Service
+- 1 call naar de domain doen
+- Tip: Kijken naar sectioning voor layout
+- Open of closes op een andere mannier bekijken
+##### Domain
+- Annotaties
+- CalculatePriceCriteria
+#### _Order_
+##### Domain
+- Annotaties
+- Cleanup
+#### _Delivery_
+##### Api
+DeliveryController: SetReady() andere naam geven
+##### Repository
+- Boven interface moet geen Annotatie
+- magic values weg
+##### Service
+- Dubbele code in deliver()
+  - zou in 1 keer moeten kunnen
+    - Tip: in Courier current delivery weg doen?
