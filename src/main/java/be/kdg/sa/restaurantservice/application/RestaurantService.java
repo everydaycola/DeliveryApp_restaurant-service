@@ -86,6 +86,18 @@ public class RestaurantService {
         restaurants.save(restaurant);
     }
 
+    public Restaurant openOrCloseRestaurant(RestaurantId restaurantId, boolean isOpen){
+        Restaurant restaurant =  findById(restaurantId);
+        restaurant.open(isOpen);
+        restaurants.save(restaurant);
+        return restaurant;
+    }
+
+    public void resetOverwrite(RestaurantId restaurantId){
+        Restaurant restaurant = findById(restaurantId);
+        restaurant.stopOverwriteOpeningHours();
+    }
+
     //Dish
     public Dish findDishById(RestaurantId restaurantId, DishId dishId) {
         return restaurants.findDishById(restaurantId, dishId).orElseThrow(dishId::notFound);

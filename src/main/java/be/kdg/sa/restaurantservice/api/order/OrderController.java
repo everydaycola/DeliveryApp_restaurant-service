@@ -5,7 +5,6 @@ import be.kdg.sa.restaurantservice.application.OrderService;
 import be.kdg.sa.restaurantservice.domain.order.Order;
 import be.kdg.sa.restaurantservice.domain.order.OrderStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,11 +19,9 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orders;
-    private final RabbitTemplate rabbitTemplate;
 
-    public OrderController(OrderService orders, RabbitTemplate rabbitTemplate) {
+    public OrderController(OrderService orders) {
         this.orders = orders;
-        this.rabbitTemplate = rabbitTemplate;
     }
 
 

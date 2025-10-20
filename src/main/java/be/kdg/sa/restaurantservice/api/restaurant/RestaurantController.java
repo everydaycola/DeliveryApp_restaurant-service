@@ -17,7 +17,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -125,20 +124,18 @@ public class RestaurantController {
                                                                @RequestParam final boolean open){
         final RestaurantId restaurantId = new RestaurantId(id);
 
-        Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
-        restaurant.open(open);
+        Restaurant restaurant = restaurants.openOrCloseRestaurant(restaurantId, open);
 
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
     @PatchMapping("/{id}/resetOverwrite")
-    public ResponseEntity<RestaurantDto> stopOpeningHoursOverwrite(@PathVariable final UUID id){
+    public ResponseEntity stopOpeningHoursOverwrite(@PathVariable final UUID id){
         final RestaurantId restaurantId = new RestaurantId(id);
 
-        Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
-        restaurant.stopOverwriteOpeningHours();
+        restaurants.resetOverwrite(restaurantId);
 
-        return ResponseEntity.ok(RestaurantDto.from(restaurant));
+        return ResponseEntity.noContent().build();
     }
 
     //Dishes
@@ -153,7 +150,7 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{id}/menu/{dishId}/state")
-    public ResponseEntity<DishDto> updateDishState(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
+    public ResponseEntity<DishDto> changeDishState(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
