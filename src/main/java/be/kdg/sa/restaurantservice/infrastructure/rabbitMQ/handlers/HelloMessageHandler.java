@@ -11,14 +11,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class HelloMessageHandler {
 
-
-    @RabbitListener(queues = RabbitMQTopology.DELIVERY_QUEUE_NAME)
-    void onHelloMessageReceived(HelloMessage message) {
-        log.info("hello: {}", message);
-    }
-
     @RabbitListener(queues = RabbitMQTopology.ORDER_QUEUE_NAME)
     void onSomethingMessageReceived(HelloMessage message) {
-        log.info("something: {}", message);
+        log.info("Message Received: {}", message);
     }
 }
