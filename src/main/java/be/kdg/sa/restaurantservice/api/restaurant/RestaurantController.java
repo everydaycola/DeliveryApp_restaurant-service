@@ -150,7 +150,7 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{id}/menu/{dishId}/state")
-    public ResponseEntity<DishDto> updateDishState(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
+    public ResponseEntity<DishDto> changeDishState(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 

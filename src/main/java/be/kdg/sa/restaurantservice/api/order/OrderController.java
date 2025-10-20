@@ -20,11 +20,9 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orders;
-    private final RabbitTemplate rabbitTemplate;
 
-    public OrderController(OrderService orders, RabbitTemplate rabbitTemplate) {
+    public OrderController(OrderService orders) {
         this.orders = orders;
-        this.rabbitTemplate = rabbitTemplate;
     }
 
 
