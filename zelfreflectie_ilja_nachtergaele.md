@@ -18,3 +18,19 @@ De samenwerking verloopt vlot. Ik denk dat ik zelf meer moeite had met het begri
 Zowel restaurant als delivery zijn feature-complete. Bij beide moet keycloac nog volledig geimplementeerd worden. En messeging moet beter uitgewerkt worden. In order heb ik een deel van de backend al gedaan. De frontend is nog niet aangeraakt, momenteel staat hier een default vite project. Er zijn wel meerdere api request die via de backend van order tot restaurant moeten gaan, die werken volledig en gaan het maken van de frontend vereenvoudigen.
 ## Post coaching
 ### Feedback
+
+ - messeging and security te weinig
+ - rest controller, opoen/close: taak voor serive
+   - updatedishstate -> publish dish
+ - publish dishes taak: naamgeving
+ - @atScheduled via spring vor timed events
+ - rare comments in restaurantservice
+ - intellij java regiuons ipv comment headers
+ - voor opening hours: override vervangen door ook schedule
+ - domein ook annoteren, in order en delivery.
+ - methodes van delivery controller moeten weg.
+ - ready -> ready for pickup
+ - @repo bij delivery repo moet weg.
+ - magic values in app properties
+ - queue names in app properties
+ - past en current delivies zijn berekende velden
