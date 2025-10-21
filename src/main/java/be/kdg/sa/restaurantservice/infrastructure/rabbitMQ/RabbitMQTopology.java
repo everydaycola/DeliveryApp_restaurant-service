@@ -9,17 +9,11 @@ public class RabbitMQTopology {
 
     public static final String KDG_EXCHANGE_NAME = "kdg_exchange";
 
-    public static final String DELIVERY_QUEUE_NAME = "delivery_queue";
     public static final String ORDER_QUEUE_NAME = "order_queue";
 
     @Bean
-    TopicExchange deliveryExchange() {
+    TopicExchange kdgExchange() {
         return new TopicExchange(KDG_EXCHANGE_NAME);
-    }
-
-    @Bean
-    Queue deliveryQueue() {
-        return QueueBuilder.nonDurable(DELIVERY_QUEUE_NAME).build();
     }
 
     @Bean
@@ -29,6 +23,6 @@ public class RabbitMQTopology {
 
     @Bean
     Binding orderQueueToRestaurantExchangeBinding() {
-        return BindingBuilder.bind(orderQueue()).to(deliveryExchange()).with("order.*");
+        return BindingBuilder.bind(orderQueue()).to(kdgExchange()).with("order.*");
     }
 }

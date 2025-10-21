@@ -8,6 +8,7 @@ import be.kdg.sa.restaurantservice.domain.order.OrderStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public class JpaOrderEntity {
     public JpaOrderEntity(UUID orderId, OrderStatus status, UUID restaurantId) {
         this.orderId = orderId;
         this.status = status;
-        this.orderLines = List.of();
+        this.orderLines = new ArrayList<>();
         this.restaurantId = restaurantId;
     }
 
@@ -42,9 +43,12 @@ public class JpaOrderEntity {
         JpaOrderEntity jpaOrderEntity =
                 new JpaOrderEntity(order.getOrderId().id(), order.getStatus(), order.getRestaurantId().id());
 
-        List<JpaOrderLineEntity> jpaOrderEntities =
-                order.getOrderLines().stream().map(JpaOrderLineEntity::fromDomain).toList();
-        jpaOrderEntity.setOrderLines(jpaOrderEntities);
+        List<JpaOrderLineEntity> jpaOrderLines =
+                order.getOrderLines().stream()
+                        .map(JpaOrderLineEntity::fromDomain)
+                        .toList();
+
+        jpaOrderLines.forEach(jpaOrderEntity::addOrderLine);
 
         return jpaOrderEntity;
     }
@@ -67,5 +71,10 @@ public class JpaOrderEntity {
 
     public void setOrderLines(List<JpaOrderLineEntity> orderLines) {
         this.orderLines = orderLines;
+    }
+
+    public void addOrderLine(JpaOrderLineEntity orderLine) {
+        orderLines.add(orderLine);
+        orderLine.setOrder(this);
     }
 }
