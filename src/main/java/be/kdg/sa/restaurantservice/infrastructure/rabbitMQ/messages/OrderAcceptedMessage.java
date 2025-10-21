@@ -1,6 +1,6 @@
 package be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages;
 
-import be.kdg.sa.restaurantservice.api.order.dtos.OrderDto;
+import be.kdg.sa.restaurantservice.api.order.dtos.OrderAcceptedDto;
 
-public record OrderAcceptedMessage(OrderDto orderDto) {
+public record OrderAcceptedMessage(OrderAcceptedDto orderDto) {
 }

@@ -22,7 +22,7 @@ public class RabbitMQTopology {
     }
 
     @Bean
-    Binding orderQueueToRestaurantExchangeBinding() {
+    Binding orderQueueToKdgExchangeBinding() {
         return BindingBuilder.bind(orderQueue()).to(kdgExchange()).with("order.*");
     }
 }

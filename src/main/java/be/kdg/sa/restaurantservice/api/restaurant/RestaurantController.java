@@ -1,5 +1,6 @@
 package be.kdg.sa.restaurantservice.api.restaurant;
 
+import be.kdg.sa.restaurantservice.api.order.dtos.OrderAcceptedDto;
 import be.kdg.sa.restaurantservice.api.order.dtos.OrderDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishScheduleDto;
@@ -210,10 +211,9 @@ public class RestaurantController {
         final OrderId ordId = new OrderId(orderId);
 
         Order order = orders.acceptOrder(restaurantId,ordId);
-        OrderDto dto = OrderDto.from(order);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.accepted", new OrderAcceptedMessage(dto));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.accepted", new OrderAcceptedMessage(OrderAcceptedDto.from(order)));
 
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(OrderDto.from(order));
     }
 }
