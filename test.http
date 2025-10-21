@@ -2,6 +2,7 @@
 @resto1dish1 = 27756a48-0b85-4499-aadb-c08a97943263
 @resto1dish2 = 6c273939-faf5-4eca-988d-08b14533849e
 @resto1dish3 = 98be5020-eb67-49e0-815e-3b2f7e1808e0
+@order1 = 550e8400-e29b-41d4-a716-446655440000
 
 ### Create a new restaurant
 POST http://localhost:8081/api/restaurants
@@ -143,3 +144,6 @@ Content-Type: application/json
     "{{resto1dish3}}"
   ]
 }
+
+### Accept a pending order
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/accept

@@ -37,4 +37,13 @@ public class Order {
         }
 
     }
+
+    public void acceptOrReject(boolean accept){
+        this.status.shouldBe(OrderStatus.PENDING);
+        if (accept){
+            this.status = OrderStatus.ACCEPTED;
+        } else {
+            this.status = OrderStatus.DECLINED;
+        }
+    }
 }

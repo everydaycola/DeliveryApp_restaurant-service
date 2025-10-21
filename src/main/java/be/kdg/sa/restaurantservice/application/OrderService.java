@@ -34,6 +34,10 @@ public class OrderService {
         return orders.findAllByRestaurantIdAndOrderStatus(restaurantId, status).orElseThrow(restaurantId::notFound);
     }
 
+    private Order findByRestaurantIdAndOrderId(RestaurantId restaurantId, OrderId orderId){
+        return orders.findByRestaurantIdAndOrderId(restaurantId,orderId).orElseThrow(orderId::notFound);
+    }
+
     public void placeOrder(OrderPlacedMessage message) {
         RestaurantId resId = new RestaurantId(UUID.fromString(message.orderDto().restaurantId()));
         OrderId ordId = new OrderId(UUID.fromString(message.orderDto().orderId()));
@@ -57,4 +61,11 @@ public class OrderService {
         log.info("Dish {} added to Order {}",dishId.id(),order.getOrderId().id());
     }
 
+    public Order acceptOrder(RestaurantId restaurantId, OrderId orderId){
+        Order order = findByRestaurantIdAndOrderId(restaurantId,orderId);
+        order.acceptOrReject(true);
+        orders.save(order);
+        log.info("Order {} accepted", order.getOrderId().id());
+        return order;
+    }
 }

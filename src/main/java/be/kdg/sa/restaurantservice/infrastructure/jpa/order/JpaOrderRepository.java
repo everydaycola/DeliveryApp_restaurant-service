@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface JpaOrderRepository extends JpaRepository<JpaOrderEntity, UUID> {
     Optional<List<JpaOrderEntity>> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);
+    Optional<JpaOrderEntity> findByRestaurantIdAndOrderId(UUID restaurantId, UUID orderId);
 
     @Query("""
     SELECT o FROM JpaOrderEntity o

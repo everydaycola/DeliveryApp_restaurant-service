@@ -1,6 +1,7 @@
 package be.kdg.sa.restaurantservice.domain.order;
 
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
+import org.aspectj.weaver.ast.Or;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -11,4 +12,5 @@ public interface OrderRepository {
     Optional<Order> findById(OrderId orderId);
     Optional<Order> findByIdWithLines(OrderId orderId);
     Optional<List<Order>> findAllByRestaurantIdAndOrderStatus(RestaurantId id, OrderStatus orderStatus);
+    Optional<Order> findByRestaurantIdAndOrderId(RestaurantId restaurantId, OrderId orderId);
 }

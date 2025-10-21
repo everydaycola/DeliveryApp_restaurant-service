@@ -45,4 +45,10 @@ public class DbOrderRepository implements OrderRepository {
                 jpaOrderEntities -> jpaOrderEntities.stream().map(JpaOrderEntity::toDomain).toList()
         );
     }
+
+    @Override
+    public Optional<Order> findByRestaurantIdAndOrderId(RestaurantId restaurantId, OrderId orderId) {
+        return this.jpaOrderRepository.findByRestaurantIdAndOrderId(restaurantId.id(), orderId.id())
+                .map(JpaOrderEntity::toDomain);
+    }
 }

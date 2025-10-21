@@ -1,17 +1,23 @@
 package be.kdg.sa.restaurantservice.api.restaurant;
 
+import be.kdg.sa.restaurantservice.api.order.dtos.OrderDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishScheduleDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.NewRestaurantDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.RestaurantDto;
+import be.kdg.sa.restaurantservice.application.OrderService;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
+import be.kdg.sa.restaurantservice.domain.order.Order;
+import be.kdg.sa.restaurantservice.domain.order.OrderId;
+import be.kdg.sa.restaurantservice.domain.order.OrderStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +32,12 @@ public class RestaurantController {
     private static final OwnerId ownerId = new OwnerId(UUID.randomUUID());
 
     private final RestaurantService restaurants;
+    private final OrderService orders;
     private final RabbitTemplate rabbitTemplate;
 
-    public RestaurantController(RestaurantService restaurants, RabbitTemplate rabbitTemplate) {
+    public RestaurantController(RestaurantService restaurants, OrderService orders, RabbitTemplate rabbitTemplate) {
         this.restaurants = restaurants;
+        this.orders = orders;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -77,6 +85,17 @@ public class RestaurantController {
         List<RestaurantDto> dtos = allRestaurants.stream()
                 .map(RestaurantDto::from)
                 .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/{id}/orders_pending")
+    public ResponseEntity<List<OrderDto>> findAllPendingOrdersForRestaurant(@PathVariable UUID id){
+        final RestaurantId restaurantId = new RestaurantId(id);
+
+        List<Order> pendingOrders = orders.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.PENDING);
+
+        List<OrderDto> dtos = pendingOrders.stream().map(OrderDto::from).toList();
 
         return ResponseEntity.ok(dtos);
     }
@@ -185,5 +204,16 @@ public class RestaurantController {
     }
 
     //Messaging (RabbitMQ)
+    @PatchMapping("/{id}/orders/{orderId}/accept")
+    public ResponseEntity<OrderDto> acceptOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
+        final RestaurantId restaurantId = new RestaurantId(id);
+        final OrderId ordId = new OrderId(orderId);
 
+        Order order = orders.acceptOrder(restaurantId,ordId);
+        OrderDto dto = OrderDto.from(order);
+
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.accepted", new OrderAcceptedMessage(dto));
+
+        return ResponseEntity.ok(dto);
+    }
 }
