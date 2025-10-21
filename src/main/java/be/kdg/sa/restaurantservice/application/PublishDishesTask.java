@@ -8,6 +8,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantRepository;
 import java.util.List;
 import java.util.TimerTask;
 
+//TODO: Do with spring @Schedule
 public class PublishDishesTask extends TimerTask {
     private RestaurantRepository restaurants;
     private Restaurant restaurant;
