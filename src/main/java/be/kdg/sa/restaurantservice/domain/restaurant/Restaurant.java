@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 import java.util.UUID;
 
 @AggregateRoot
@@ -183,5 +182,13 @@ public class Restaurant {
                 .filter(roh -> roh.getDay().equals(newRoh.getDay()))
                 .anyMatch(roh -> roh.getOpeningTime().isBefore(newRoh.getClosingTime()) ||
                         roh.getClosingTime().isAfter(newRoh.getOpeningTime()));
+    }
+
+    public void checkIfOwnerBy(OwnerId ownerId) {
+        log.info("Authenticating restaurant {} for courier {}", this.id, ownerId);
+        if(!this.ownerId.equals(ownerId)) {
+            log.warn("Restaurant {} is not owned by {} but it is owned by {}", this.id, ownerId, this.ownerId);
+            throw new IllegalStateException("Restaurant is owner by " + this.ownerId.id() + " and not " + ownerId.id());
+        }
     }
 }

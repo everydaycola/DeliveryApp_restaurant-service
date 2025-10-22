@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.api.order.dtos;
+package be.kdg.sa.restaurantservice.api.dtos;
 
 
 

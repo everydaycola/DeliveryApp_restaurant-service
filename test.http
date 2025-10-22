@@ -1,11 +1,38 @@
-@restaurant1 = dab961f7-5441-4827-a55e-7fcbc86a8fb2
-@resto1dish1 = 27756a48-0b85-4499-aadb-c08a97943263
-@resto1dish2 = 6c273939-faf5-4eca-988d-08b14533849e
-@resto1dish3 = 98be5020-eb67-49e0-815e-3b2f7e1808e0
-@order1 = 550e8400-e29b-41d4-a716-446655440000
+@restaurant1=dab961f7-5441-4827-a55e-7fcbc86a8fb2
+@resto1dish1=27756a48-0b85-4499-aadb-c08a97943263
+@resto1dish2=6c273939-faf5-4eca-988d-08b14533849e
+@resto1dish3= 98be5020-eb67-49e0-815e-3b2f7e1808e0
+@owner1=803afbdd-a7dc-4735-bbf4-526d99cbf686
+@owner1username=linguinealfredo
+@owner1password=owner
+@owner2=82090ea4-05d5-4d95-97de-e33760ac73f9
+@owner2username=shigerumiyamoto
+@owner2password=owner
+@order1=550e8400-e29b-41d4-a716-446655440000
+
+### Get access token for courier1
+POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner1username}}&password={{owner1password}}&grant_type=password&scope=openid
+
+> {%
+    client.global.set("access_token_owner1", response.body.access_token);
+%}
+
+### Get access token for courier2
+POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner2username}}&password={{owner2password}}&grant_type=password&scope=openid
+
+> {%
+    client.global.set("access_token_owner2", response.body.access_token);
+%}
 
 ### Create a new restaurant
 POST http://localhost:8081/api/restaurants
+Authorization: Bearer {{access_token_owner2}}
 Content-Type: application/json
 
 {
@@ -65,9 +92,11 @@ GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu
 
 ### Get the full menu of a restaurant
 GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu_full
+Authorization: Bearer {{access_token_owner1}}
 
 ### Create a new dish for a restaurant
 POST http://localhost:8081/api/restaurants/{{restaurant1}}/menu
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
@@ -79,9 +108,11 @@ Content-Type: application/json
 
 ### Get a specific dish from a restaurant
 GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish1}}
+Authorization: Bearer {{access_token_owner1}}
 
 ### Update a dish's state
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish3}}/state
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
@@ -90,14 +121,17 @@ Content-Type: application/json
 
 ### Open or close a restaurant
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}?open=true
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 ### Reset overwrite opening hours
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/resetOverwrite
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 ### Update a dish (name & description)
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
@@ -107,6 +141,7 @@ Content-Type: application/json
 
 ### Update dish1's state to ready for publishing (prep)
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish1}}/state
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
@@ -115,6 +150,7 @@ Content-Type: application/json
 
 ### Update dish2's state to ready for publishing (prep)
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}/state
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
@@ -123,10 +159,12 @@ Content-Type: application/json
 
 ### Publish all ready dishes
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/publish_ready
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 ### Update dish2's state to ready for publishing
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}/state
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
@@ -135,6 +173,7 @@ Content-Type: application/json
 
 ### Schedule dishes for future publishing
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/publish_schedule
+Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {

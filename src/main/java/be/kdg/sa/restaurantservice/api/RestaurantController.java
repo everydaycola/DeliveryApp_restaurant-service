@@ -1,11 +1,11 @@
-package be.kdg.sa.restaurantservice.api.restaurant;
+package be.kdg.sa.restaurantservice.api;
 
-import be.kdg.sa.restaurantservice.api.order.dtos.OrderMessagingDto;
-import be.kdg.sa.restaurantservice.api.order.dtos.OrderDto;
-import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
-import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishScheduleDto;
-import be.kdg.sa.restaurantservice.api.restaurant.dtos.NewRestaurantDto;
-import be.kdg.sa.restaurantservice.api.restaurant.dtos.RestaurantDto;
+import be.kdg.sa.restaurantservice.api.dtos.OrderMessagingDto;
+import be.kdg.sa.restaurantservice.api.dtos.OrderDto;
+import be.kdg.sa.restaurantservice.api.dtos.DishDto;
+import be.kdg.sa.restaurantservice.api.dtos.DishScheduleDto;
+import be.kdg.sa.restaurantservice.api.dtos.NewRestaurantDto;
+import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.OrderService;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
@@ -23,6 +23,9 @@ import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderReadyMe
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderRejectedMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,9 +34,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/restaurants")
 public class RestaurantController {
-    //temp solution until we get Auth context
-    private static final OwnerId ownerId = new OwnerId(UUID.randomUUID());
-
     private final RestaurantService restaurants;
     private final OrderService orders;
     private final RabbitTemplate rabbitTemplate;
@@ -47,9 +47,11 @@ public class RestaurantController {
     //POST
     //Restaurant
     @PostMapping
-    public ResponseEntity<NewRestaurantDto> create(@RequestBody RestaurantDto restaurantDto) {
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<NewRestaurantDto> create(@RequestBody RestaurantDto restaurantDto,
+                                                   @AuthenticationPrincipal Jwt token) {
         Restaurant restaurant = restaurants.create(
-                ownerId,
+                new OwnerId(UUID.fromString(token.getClaimAsString("databaseid"))),
                 restaurantDto.name(),
                 restaurantDto.address(),
                 restaurantDto.contactEmail(),
@@ -93,8 +95,13 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}/orders_pending")
-    public ResponseEntity<List<OrderDto>> findAllPendingOrdersForRestaurant(@PathVariable UUID id){
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<List<OrderDto>> findAllPendingOrdersForRestaurant(@PathVariable UUID id,
+                                                                            @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
+
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        restaurants.checkOwnership(restaurantId, ownerId);
 
         List<Order> pendingOrders = orders.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.PENDING);
 
@@ -105,9 +112,14 @@ public class RestaurantController {
 
     //Dishes
     @GetMapping("/{id}/menu_full")
-    public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id) {
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id,
+                                                      @AuthenticationPrincipal Jwt token) {
         final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findByIdWithMenu(restaurantId).getFullMenu();
+        Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        restaurant.checkIfOwnerBy(ownerId);
+        List<Dish> allDishes = restaurant.getFullMenu();
 
         List<DishDto> dtos = allDishes.stream()
                 .map(DishDto::from)
@@ -141,50 +153,69 @@ public class RestaurantController {
     //PATCH
     //Restaurant
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<RestaurantDto> openOrCloseRestaurant(@PathVariable final UUID id,
-                                                               @RequestParam final boolean open){
+                                                               @RequestParam final boolean open,
+                                                               @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
 
-        Restaurant restaurant = restaurants.openOrCloseRestaurant(restaurantId, open);
+        Restaurant restaurant = restaurants.openOrCloseRestaurant(restaurantId, open, ownerId);
 
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
     @PatchMapping("/{id}/resetOverwrite")
-    public ResponseEntity stopOpeningHoursOverwrite(@PathVariable final UUID id){
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity stopOpeningHoursOverwrite(@PathVariable final UUID id,
+                                                    @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
 
-        restaurants.resetOverwrite(restaurantId);
+        restaurants.resetOverwrite(restaurantId, ownerId);
 
         return ResponseEntity.noContent().build();
     }
 
     //Dishes
     @PatchMapping("/{id}/menu/{dishId}")
-    public ResponseEntity<DishDto> updateDish(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<DishDto> updateDish(@PathVariable final UUID id,
+                                              @PathVariable final UUID dishId,
+                                              @RequestBody DishDto dishDto,
+                                              @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
 
-        Dish dish = restaurants.updateDish(restaurantId, dId, dishDto.name(), dishDto.description());
+        Dish dish = restaurants.updateDish(restaurantId, dId, dishDto.name(), dishDto.description(), ownerId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
 
     @PatchMapping("/{id}/menu/{dishId}/state")
-    public ResponseEntity<DishDto> changeDishState(@PathVariable final UUID id, @PathVariable final UUID dishId, @RequestBody DishDto dishDto){
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<DishDto> changeDishState(@PathVariable final UUID id,
+                                                   @PathVariable final UUID dishId,
+                                                   @RequestBody DishDto dishDto,
+                                                   @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
 
-        Dish dish = restaurants.updateDishState(restaurantId, dId, dishDto.state());
+        Dish dish = restaurants.updateDishState(restaurantId, dId, dishDto.state(), ownerId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
 
     @PatchMapping("/{id}/menu/publish_ready")
-    public ResponseEntity<List<DishDto>> publishReadyDishes(@PathVariable final UUID id){
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<List<DishDto>> publishReadyDishes(@PathVariable final UUID id,
+                                                            @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
 
-        List<Dish> dishes = restaurants.publishReadyDishes(restaurantId);
+        List<Dish> dishes = restaurants.publishReadyDishes(restaurantId, ownerId);
 
         List<DishDto> dtos = dishes.stream()
                 .map(DishDto::from)
@@ -194,11 +225,15 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{id}/menu/publish_schedule")
-    public ResponseEntity<List<DishDto>> publishDishesOnSchedule(@PathVariable final UUID id, @RequestBody DishScheduleDto dishScheduleDto){
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<List<DishDto>> publishDishesOnSchedule(@PathVariable final UUID id,
+                                                                 @RequestBody DishScheduleDto dishScheduleDto,
+                                                                 @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
         List<DishId> dishIds = dishScheduleDto.dishIds().stream().map(DishId::new).toList();
 
-        List<Dish> updatedDishes = restaurants.publishDishesOnSchedule(restaurantId, dishScheduleDto.scheduledDate(), dishIds);
+        List<Dish> updatedDishes = restaurants.publishDishesOnSchedule(restaurantId, dishScheduleDto.scheduledDate(), dishIds, ownerId);
         List<DishDto> dtos = updatedDishes.stream()
                 .map(DishDto::from)
                 .toList();

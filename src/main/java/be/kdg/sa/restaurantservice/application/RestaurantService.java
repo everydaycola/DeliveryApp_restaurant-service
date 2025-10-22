@@ -1,7 +1,7 @@
 package be.kdg.sa.restaurantservice.application;
 
-import be.kdg.sa.restaurantservice.api.restaurant.dtos.AddressDto;
-import be.kdg.sa.restaurantservice.api.restaurant.dtos.RestaurantOpeningHoursDto;
+import be.kdg.sa.restaurantservice.api.dtos.AddressDto;
+import be.kdg.sa.restaurantservice.api.dtos.RestaurantOpeningHoursDto;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
@@ -86,15 +86,17 @@ public class RestaurantService {
         restaurants.save(restaurant);
     }
 
-    public Restaurant openOrCloseRestaurant(RestaurantId restaurantId, boolean isOpen){
+    public Restaurant openOrCloseRestaurant(RestaurantId restaurantId, boolean isOpen, OwnerId ownerId){
         Restaurant restaurant =  findById(restaurantId);
+        restaurant.checkIfOwnerBy(ownerId);
         restaurant.open(isOpen);
         restaurants.save(restaurant);
         return restaurant;
     }
 
-    public void resetOverwrite(RestaurantId restaurantId){
+    public void resetOverwrite(RestaurantId restaurantId, OwnerId ownerId){
         Restaurant restaurant = findById(restaurantId);
+        restaurant.checkIfOwnerBy(ownerId);
         restaurant.stopOverwriteOpeningHours();
     }
 
@@ -103,17 +105,18 @@ public class RestaurantService {
         return restaurants.findDishById(restaurantId, dishId).orElseThrow(dishId::notFound);
     }
 
-    public Dish updateDish(RestaurantId restaurantId, DishId dishId, String name, String description){
+    public Dish updateDish(RestaurantId restaurantId, DishId dishId, String name, String description, OwnerId ownerId){
         Restaurant restaurant = findByIdWithMenu(restaurantId);
+        restaurant.checkIfOwnerBy(ownerId);
         Dish dish = restaurant.updateDish(dishId, name, description);
-
         restaurants.save(restaurant);
 
         return dish;
     }
 
-    public Dish updateDishState(RestaurantId restaurantId, DishId dishId, DishState state){
+    public Dish updateDishState(RestaurantId restaurantId, DishId dishId, DishState state, OwnerId ownerId){
        Restaurant restaurant = findByIdWithMenu(restaurantId);
+       restaurant.checkIfOwnerBy(ownerId);
        Dish dish = restaurant.updateDishState(dishId, state);
 
        restaurants.save(restaurant);
@@ -121,8 +124,9 @@ public class RestaurantService {
        return dish;
     }
 
-    public List<Dish> publishReadyDishes(RestaurantId restaurantId){
+    public List<Dish> publishReadyDishes(RestaurantId restaurantId, OwnerId ownerId){
         Restaurant restaurant = findByIdWithMenu(restaurantId);
+        restaurant.checkIfOwnerBy(ownerId);
         List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
 
         List<Dish> newPublicDished = readyDishes.stream()
@@ -133,12 +137,18 @@ public class RestaurantService {
         return newPublicDished;
     }
 
-    public List<Dish> publishDishesOnSchedule(RestaurantId id , Date scheduledDate, List<DishId> dishIds){
+    public List<Dish> publishDishesOnSchedule(RestaurantId id , Date scheduledDate, List<DishId> dishIds, OwnerId ownerId){
         Restaurant restaurant = findByIdWithMenu(id);
+        restaurant.checkIfOwnerBy(ownerId);
 
         //restaurant is saved in PublishDishesTask to the repository
         new Timer().schedule(new PublishDishesTask(restaurants,restaurant, dishIds), scheduledDate);
 
         return dishIds.stream().map(restaurant::getDish).toList();
+    }
+
+    public void checkOwnership(RestaurantId restaurantId, OwnerId ownerId) {
+        final Restaurant restaurant = restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
+        restaurant.checkIfOwnerBy(ownerId);
     }
 }
