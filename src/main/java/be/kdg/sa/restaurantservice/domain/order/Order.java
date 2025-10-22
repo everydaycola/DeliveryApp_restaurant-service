@@ -46,4 +46,9 @@ public class Order {
             this.status = OrderStatus.DECLINED;
         }
     }
+
+    public void ready(){
+        this.status.shouldBe(OrderStatus.ACCEPTED);
+        this.status = OrderStatus.READY;
+    }
 }

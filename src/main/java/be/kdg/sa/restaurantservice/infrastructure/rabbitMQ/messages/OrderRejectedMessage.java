@@ -1,6 +1,6 @@
 package be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages;
 
-import be.kdg.sa.restaurantservice.api.order.dtos.OrderAcceptedOrRejectedDto;
+import be.kdg.sa.restaurantservice.api.order.dtos.OrderMessagingDto;
 
-public record OrderRejectedMessage(OrderAcceptedOrRejectedDto orderDto) {
+public record OrderRejectedMessage(OrderMessagingDto orderDto) {
 }

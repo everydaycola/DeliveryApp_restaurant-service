@@ -1,6 +1,6 @@
 package be.kdg.sa.restaurantservice.api.restaurant;
 
-import be.kdg.sa.restaurantservice.api.order.dtos.OrderAcceptedOrRejectedDto;
+import be.kdg.sa.restaurantservice.api.order.dtos.OrderMessagingDto;
 import be.kdg.sa.restaurantservice.api.order.dtos.OrderDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishScheduleDto;
@@ -19,6 +19,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderReadyMessage;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderRejectedMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
@@ -213,7 +214,7 @@ public class RestaurantController {
 
         Order order = orders.acceptOrder(restaurantId,ordId, true);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.accepted", new OrderAcceptedMessage(OrderAcceptedOrRejectedDto.from(order)));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.accepted", new OrderAcceptedMessage(OrderMessagingDto.from(order)));
 
         return ResponseEntity.ok(OrderDto.from(order));
     }
@@ -225,7 +226,19 @@ public class RestaurantController {
 
         Order order = orders.acceptOrder(restaurantId,ordId,false);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.rejected", new OrderRejectedMessage(OrderAcceptedOrRejectedDto.from(order)));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.rejected", new OrderRejectedMessage(OrderMessagingDto.from(order)));
+
+        return ResponseEntity.ok(OrderDto.from(order));
+    }
+
+    @PatchMapping("/{id}/orders/{orderId}/ready")
+    public ResponseEntity<OrderDto> readyOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
+        final RestaurantId restaurantId = new RestaurantId(id);
+        final OrderId ordId = new OrderId(orderId);
+
+        Order order = orders.readyOrder(restaurantId,ordId);
+
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.ready", new OrderReadyMessage(OrderMessagingDto.from(order)));
 
         return ResponseEntity.ok(OrderDto.from(order));
     }

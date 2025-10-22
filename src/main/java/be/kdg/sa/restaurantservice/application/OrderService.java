@@ -68,4 +68,12 @@ public class OrderService {
         log.info("Order {} accepted", order.getOrderId().id());
         return order;
     }
+
+    public Order readyOrder(RestaurantId restaurantId, OrderId orderId){
+        Order order = findByRestaurantIdAndOrderId(restaurantId, orderId);
+        order.ready();
+        orders.save(order);
+        log.info("Order {} set ready for pickup", order.getOrderId().id());
+        return order;
+    }
 }
