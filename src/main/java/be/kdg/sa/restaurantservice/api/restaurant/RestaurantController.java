@@ -18,8 +18,8 @@ import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
-import be.kdg.sa.common_messaging.OrderAcceptedMessage;
-import be.kdg.sa.common_messaging.OrderRejectedMessage;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
+import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderRejectedMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -213,7 +213,7 @@ public class RestaurantController {
 
         Order order = orders.acceptOrder(restaurantId,ordId, true);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.accepted", new OrderAcceptedMessage(OrderAcceptedOrRejectedDto.from(order)));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.accepted", new OrderAcceptedMessage(OrderAcceptedOrRejectedDto.from(order)));
 
         return ResponseEntity.ok(OrderDto.from(order));
     }
@@ -225,7 +225,7 @@ public class RestaurantController {
 
         Order order = orders.acceptOrder(restaurantId,ordId,false);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.rejected", new OrderRejectedMessage(OrderAcceptedOrRejectedDto.from(order)));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.rejected", new OrderRejectedMessage(OrderAcceptedOrRejectedDto.from(order)));
 
         return ResponseEntity.ok(OrderDto.from(order));
     }

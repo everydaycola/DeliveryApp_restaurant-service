@@ -16,7 +16,7 @@ public class OrderPlacedMessageHandler {
         this.orderService = orderService;
     }
 
-    @RabbitListener(queues = RabbitMQTopology.RESTAURANT_QUEUE_NAME)
+    @RabbitListener(queues = RabbitMQTopology.ORDER_PLACED_QUEUE_NAME)
     void onOrderPlacedMessageReceived(OrderPlacedMessage message) {
         log.info("Order Placed Message Received: Order={}", message.orderDto().orderId());
 
