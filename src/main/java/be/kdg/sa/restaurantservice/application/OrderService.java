@@ -61,9 +61,9 @@ public class OrderService {
         log.info("Dish {} added to Order {}",dishId.id(),order.getOrderId().id());
     }
 
-    public Order acceptOrder(RestaurantId restaurantId, OrderId orderId){
+    public Order acceptOrder(RestaurantId restaurantId, OrderId orderId, boolean accept){
         Order order = findByRestaurantIdAndOrderId(restaurantId,orderId);
-        order.acceptOrReject(true);
+        order.acceptOrReject(accept);
         orders.save(order);
         log.info("Order {} accepted", order.getOrderId().id());
         return order;

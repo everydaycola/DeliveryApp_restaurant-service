@@ -4,9 +4,9 @@ import be.kdg.sa.restaurantservice.domain.order.Order;
 
 import java.util.UUID;
 
-public record OrderAcceptedDto(UUID id, UUID restaurantId) {
-    public static OrderAcceptedDto from(Order order){
-        return new OrderAcceptedDto(
+public record OrderAcceptedOrRejectedDto(UUID id, UUID restaurantId) {
+    public static OrderAcceptedOrRejectedDto from(Order order){
+        return new OrderAcceptedOrRejectedDto(
                 order.getOrderId().id(),
                 order.getRestaurantId().id()
         );

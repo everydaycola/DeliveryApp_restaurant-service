@@ -1,6 +1,6 @@
 package be.kdg.sa.restaurantservice.api.restaurant;
 
-import be.kdg.sa.restaurantservice.api.order.dtos.OrderAcceptedDto;
+import be.kdg.sa.restaurantservice.api.order.dtos.OrderAcceptedOrRejectedDto;
 import be.kdg.sa.restaurantservice.api.order.dtos.OrderDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishDto;
 import be.kdg.sa.restaurantservice.api.restaurant.dtos.DishScheduleDto;
@@ -18,7 +18,8 @@ import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
-import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
+import be.kdg.sa.common_messaging.OrderAcceptedMessage;
+import be.kdg.sa.common_messaging.OrderRejectedMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -210,9 +211,21 @@ public class RestaurantController {
         final RestaurantId restaurantId = new RestaurantId(id);
         final OrderId ordId = new OrderId(orderId);
 
-        Order order = orders.acceptOrder(restaurantId,ordId);
+        Order order = orders.acceptOrder(restaurantId,ordId, true);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.accepted", new OrderAcceptedMessage(OrderAcceptedDto.from(order)));
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.accepted", new OrderAcceptedMessage(OrderAcceptedOrRejectedDto.from(order)));
+
+        return ResponseEntity.ok(OrderDto.from(order));
+    }
+
+    @PatchMapping("/{id}/orders/{orderId}/reject")
+    public ResponseEntity<OrderDto> rejectOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
+        final RestaurantId restaurantId = new RestaurantId(id);
+        final OrderId ordId = new OrderId(orderId);
+
+        Order order = orders.acceptOrder(restaurantId,ordId,false);
+
+        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"restaurant.rejected", new OrderRejectedMessage(OrderAcceptedOrRejectedDto.from(order)));
 
         return ResponseEntity.ok(OrderDto.from(order));
     }

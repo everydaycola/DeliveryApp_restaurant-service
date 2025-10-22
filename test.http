@@ -147,3 +147,7 @@ Content-Type: application/json
 
 ### Accept a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/accept
+
+
+### Reject a pending order
+PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/reject
