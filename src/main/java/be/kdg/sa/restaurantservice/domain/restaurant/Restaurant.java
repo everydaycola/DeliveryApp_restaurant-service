@@ -18,8 +18,6 @@ import java.util.UUID;
 @AggregateRoot
 @Slf4j
 public class Restaurant {
-    private static final int MAX_DISHES = 10;
-
     @Getter
     private RestaurantId id;
     @Getter
@@ -141,12 +139,12 @@ public class Restaurant {
         return dish;
     }
 
-    public Dish updateDishState(DishId id, DishState state) {
+    public Dish updateDishState(DishId id, DishState state, int maxDishes) {
         Dish dish = this.getDish(id);
 
-        if (state.equals(DishState.PUBLISHED) && menu.size() >= MAX_DISHES) {
-            log.info("Restaurant {} already has {} dishes", this.getName(), MAX_DISHES);
-            return dish;
+        if (state.equals(DishState.PUBLISHED) && menu.size() >= maxDishes) {
+            log.info("Restaurant {} has {} dishes, the max is {}", this.getName(), menu.size(), maxDishes);
+            throw new IllegalStateException("Restaurant already has " + menu.size() + " out of " + maxDishes + " dishes");
         }
         dish.updateState(state);
 

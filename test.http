@@ -10,21 +10,21 @@
 @owner2password=owner
 @order1=550e8400-e29b-41d4-a716-446655440000
 
-### Get access token for courier1
+### Get access token for owner1
 POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner1username}}&password={{owner1password}}&grant_type=password&scope=openid
+client_id=keepdishesgoing&client_secret=nH15XuASyBvX9CO6dtlFHldj8wQgP7Ya&username={{owner1username}}&password={{owner1password}}&grant_type=password&scope=openid
 
 > {%
     client.global.set("access_token_owner1", response.body.access_token);
 %}
 
-### Get access token for courier2
+### Get access token for owner2
 POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner2username}}&password={{owner2password}}&grant_type=password&scope=openid
+client_id=keepdishesgoing&client_secret=nH15XuASyBvX9CO6dtlFHldj8wQgP7Ya&username={{owner2username}}&password={{owner2password}}&grant_type=password&scope=openid
 
 > {%
     client.global.set("access_token_owner2", response.body.access_token);

@@ -2,6 +2,7 @@ package be.kdg.sa.restaurantservice.application;
 
 import be.kdg.sa.restaurantservice.api.dtos.AddressDto;
 import be.kdg.sa.restaurantservice.api.dtos.RestaurantOpeningHoursDto;
+import be.kdg.sa.restaurantservice.config.DomainProperties;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
@@ -16,9 +17,11 @@ import java.util.Timer;
 @Service
 public class RestaurantService {
     private final RestaurantRepository restaurants;
+    private final DomainProperties domainProperties;
 
-    public RestaurantService(RestaurantRepository restaurants) {
+    public RestaurantService(RestaurantRepository restaurants, DomainProperties domainProperties) {
         this.restaurants = restaurants;
+        this.domainProperties = domainProperties;
     }
 
     //Create
@@ -117,7 +120,7 @@ public class RestaurantService {
     public Dish updateDishState(RestaurantId restaurantId, DishId dishId, DishState state, OwnerId ownerId){
        Restaurant restaurant = findByIdWithMenu(restaurantId);
        restaurant.checkIfOwnerBy(ownerId);
-       Dish dish = restaurant.updateDishState(dishId, state);
+       Dish dish = restaurant.updateDishState(dishId, state, domainProperties.getMaxDishes());
 
        restaurants.save(restaurant);
 
@@ -130,7 +133,7 @@ public class RestaurantService {
         List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
 
         List<Dish> newPublicDished = readyDishes.stream()
-                .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED)).toList();
+                .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED, domainProperties.getMaxDishes())).toList();
 
         restaurants.save(restaurant);
 
@@ -142,7 +145,7 @@ public class RestaurantService {
         restaurant.checkIfOwnerBy(ownerId);
 
         //restaurant is saved in PublishDishesTask to the repository
-        new Timer().schedule(new PublishDishesTask(restaurants,restaurant, dishIds), scheduledDate);
+        new Timer().schedule(new PublishDishesTask(restaurants, domainProperties.getMaxDishes(), restaurant, dishIds), scheduledDate);
 
         return dishIds.stream().map(restaurant::getDish).toList();
     }
