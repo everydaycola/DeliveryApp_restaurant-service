@@ -8,6 +8,7 @@ import be.kdg.sa.restaurantservice.api.dtos.NewRestaurantDto;
 import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
 import be.kdg.sa.restaurantservice.application.OrderService;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
+import be.kdg.sa.restaurantservice.config.RabbitMQProperties;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
@@ -17,7 +18,6 @@ import be.kdg.sa.restaurantservice.domain.order.OrderStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
-import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.RabbitMQTopology;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderReadyMessage;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderRejectedMessage;
@@ -37,11 +37,14 @@ public class RestaurantController {
     private final RestaurantService restaurants;
     private final OrderService orders;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitMQProperties rabbitMQProperties;
 
-    public RestaurantController(RestaurantService restaurants, OrderService orders, RabbitTemplate rabbitTemplate) {
+    public RestaurantController(RestaurantService restaurants, OrderService orders, RabbitTemplate rabbitTemplate,
+                                RabbitMQProperties rabbitMQProperties) {
         this.restaurants = restaurants;
         this.orders = orders;
         this.rabbitTemplate = rabbitTemplate;
+        this.rabbitMQProperties = rabbitMQProperties;
     }
 
     //POST
@@ -249,7 +252,11 @@ public class RestaurantController {
 
         Order order = orders.acceptOrder(restaurantId,ordId, true);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.accepted", new OrderAcceptedMessage(OrderMessagingDto.from(order)));
+        rabbitTemplate.convertAndSend(
+                rabbitMQProperties.getExchangeName(),
+                rabbitMQProperties.getOrderAcceptedBinding(),
+                new OrderAcceptedMessage(OrderMessagingDto.from(order))
+        );
 
         return ResponseEntity.ok(OrderDto.from(order));
     }
@@ -261,7 +268,11 @@ public class RestaurantController {
 
         Order order = orders.acceptOrder(restaurantId,ordId,false);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.rejected", new OrderRejectedMessage(OrderMessagingDto.from(order)));
+        rabbitTemplate.convertAndSend(
+                rabbitMQProperties.getExchangeName(),
+                rabbitMQProperties.getOrderRejectedBinding(),
+                new OrderRejectedMessage(OrderMessagingDto.from(order))
+        );
 
         return ResponseEntity.ok(OrderDto.from(order));
     }
@@ -273,7 +284,11 @@ public class RestaurantController {
 
         Order order = orders.readyOrder(restaurantId,ordId);
 
-        rabbitTemplate.convertAndSend(RabbitMQTopology.KDG_EXCHANGE_NAME,"order.ready", new OrderReadyMessage(OrderMessagingDto.from(order)));
+        rabbitTemplate.convertAndSend(
+                rabbitMQProperties.getExchangeName(),
+                rabbitMQProperties.getOrderReadyBinding(),
+                new OrderReadyMessage(OrderMessagingDto.from(order))
+        );
 
         return ResponseEntity.ok(OrderDto.from(order));
     }

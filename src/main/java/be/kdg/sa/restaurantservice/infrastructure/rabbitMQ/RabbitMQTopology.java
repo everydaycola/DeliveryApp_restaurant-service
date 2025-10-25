@@ -1,5 +1,6 @@
 package be.kdg.sa.restaurantservice.infrastructure.rabbitMQ;
 
+import be.kdg.sa.restaurantservice.config.RabbitMQProperties;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,23 +8,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQTopology {
 
-    public static final String KDG_EXCHANGE_NAME = "kdg_exchange";
+    private final RabbitMQProperties properties;
 
-    public static final String ORDER_PLACED_QUEUE_NAME = "order_placed";
+    public RabbitMQTopology(RabbitMQProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
     TopicExchange kdgExchange() {
-        return new TopicExchange(KDG_EXCHANGE_NAME);
+        return new TopicExchange(properties.getExchangeName());
     }
 
     @Bean
     Queue orderPlacedQueue() {
-        return QueueBuilder.nonDurable(ORDER_PLACED_QUEUE_NAME).build();
+        return QueueBuilder.nonDurable(properties.getOrderPlacedQueue()).build();
     }
 
     @Bean
     Binding orderPlacedBinding(){
-        return BindingBuilder.bind(orderPlacedQueue()).to(kdgExchange()).with("order.placed");
+        return BindingBuilder.bind(orderPlacedQueue()).to(kdgExchange()).with(properties.getOrderPlacedBinding());
     }
 
 }
