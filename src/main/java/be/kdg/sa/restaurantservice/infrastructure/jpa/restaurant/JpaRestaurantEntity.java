@@ -137,12 +137,4 @@ public class JpaRestaurantEntity {
         this.openingHours = openingHours;
         this.openingHours.forEach(roh -> roh.setRestaurant(this));
     }
-
-    public List<JpaDishEntity> getMenu() {
-        return menu;
-    }
-
-    public List<JpaRestaurantOpeningHours> getOpeningHours() {
-        return openingHours;
-    }
 }

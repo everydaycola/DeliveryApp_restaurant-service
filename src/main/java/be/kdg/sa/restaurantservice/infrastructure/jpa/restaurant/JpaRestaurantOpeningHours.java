@@ -2,6 +2,8 @@ package be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant;
 
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantOpeningHours;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -15,18 +17,18 @@ public class JpaRestaurantOpeningHours {
     @Id
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @Setter @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private JpaRestaurantEntity restaurant;
 
-    @Column
+    @Getter @Column
     @Enumerated(value = EnumType.STRING)
     private DayOfWeek day;
 
-    @Column
+    @Getter @Column
     private LocalTime openingTime;
 
-    @Column
+    @Getter @Column
     private LocalTime closingTime;
 
     protected JpaRestaurantOpeningHours() {}
@@ -42,19 +44,4 @@ public class JpaRestaurantOpeningHours {
         return new JpaRestaurantOpeningHours(UUID.randomUUID(), roh.getDay(), roh.getOpeningTime(), roh.getClosingTime());
     }
 
-    public LocalTime getClosingTime() {
-        return closingTime;
-    }
-
-    public LocalTime getOpeningTime() {
-        return openingTime;
-    }
-
-    public DayOfWeek getDay() {
-        return day;
-    }
-
-    public void setRestaurant(JpaRestaurantEntity restaurant) {
-        this.restaurant = restaurant;
-    }
 }

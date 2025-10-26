@@ -2,6 +2,7 @@ package be.kdg.sa.restaurantservice.domain.restaurant;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
+import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.MeanPriceCriteriaCalculator;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteria;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteriaCalculator;
 import lombok.Getter;
@@ -19,43 +20,32 @@ import java.util.UUID;
 @Slf4j
 public class Restaurant {
     @Getter
-    private RestaurantId id;
+    private final RestaurantId id;
     @Getter
-    private OwnerId ownerId;
+    private final OwnerId ownerId;
     @Getter
-    private String name;
+    private final String name;
     @Getter
-    private Address address;
+    private final Address address;
     @Getter
-    private String contactEmail;
+    private final String contactEmail;
     @Getter
-    private RestaurantType type;
+    private final RestaurantType type;
     @Getter
-    private List<RestaurantOpeningHours> openingHours;
+    private final List<RestaurantOpeningHours> openingHours;
     @Getter
     private PriceCriteria priceCriteria;
     private PriceCriteriaCalculator priceCriteriaCalculator;
-    private List<Dish> menu;
+    private final List<Dish> menu;
     @Getter
-    private String logo;
+    private final String logo;
     @Getter
     private boolean isOpen;
     @Getter
     private boolean overwriteOpeningHours;
 
-    private Restaurant(final RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, PriceCriteriaCalculator priceCriteriaCalculator) {
-        this.id = id;
-        this.ownerId = ownerId;
-        this.name = name;
-        this.address = address;
-        this.contactEmail = contactEmail;
-        this.type = type;
-        this.logo = logo;
-        this.openingHours = new ArrayList<>();
-        this.menu = new ArrayList<>();
-        this.isOpen = false;
-        this.overwriteOpeningHours = false;
-        this.priceCriteriaCalculator = priceCriteriaCalculator;
+    public Restaurant(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
+        this(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo, false, false, new MeanPriceCriteriaCalculator());
     }
 
     public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, boolean isOpen, boolean overwriteOpeningHours, PriceCriteriaCalculator priceCriteriaCalculator) {
@@ -71,10 +61,6 @@ public class Restaurant {
         this.isOpen = isOpen;
         this.overwriteOpeningHours = overwriteOpeningHours;
         this.priceCriteriaCalculator = priceCriteriaCalculator;
-    }
-
-    public static Restaurant newInstance(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, PriceCriteriaCalculator priceCriteriaCalculator) {
-        return new Restaurant(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo, priceCriteriaCalculator);
     }
 
     public void checkIfOpen() {
@@ -102,8 +88,14 @@ public class Restaurant {
     }
 
     private void calculatePriceCriteria(PriceCriteriaCalculator priceCriteriaCalculator) {
-        this.priceCriteria = priceCriteriaCalculator.Calculate(menu);
+        this.priceCriteria = priceCriteriaCalculator.calculate(menu);
         log.info("PriceCriteria of {} set to {}",this.name, this.priceCriteria);
+    }
+
+    // unused currently but allows future strategy changes
+    public void changePriceCalculatorStrategy(PriceCriteriaCalculator priceCriteriaCalculator) {
+        this.priceCriteriaCalculator = priceCriteriaCalculator;
+        calculatePriceCriteria(priceCriteriaCalculator);
     }
 
     //Dish Aggregate
@@ -118,15 +110,13 @@ public class Restaurant {
         return newDish;
     }
 
-    public Dish addDishFromRepository(UUID dishId, String dishName, String description, DishState state, double price) {
+    public void addDishFromRepository(UUID dishId, String dishName, String description, DishState state, double price) {
         Dish newDish = new Dish(new DishId(dishId), dishName, state, description, price);
         this.menu.add(newDish);
 
         calculatePriceCriteria(priceCriteriaCalculator);
 
         log.info("Dish {} added to {} from repository", newDish.getName(), this.getName());
-
-        return newDish;
     }
 
     public Dish updateDish(DishId id, String name, String description) {
@@ -162,16 +152,13 @@ public class Restaurant {
     }
 
     //OpeningHours Aggregate
-    public RestaurantOpeningHours addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end) {
+    public void addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end) {
         RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day, start, end);
-        if (!openingHours.isEmpty()) {
-            if (checkOpeningHoursOverlap(newOpeningHours)) {
-                throw new IllegalArgumentException("The new hours overlap with existing hours");
-            }
+        if (!openingHours.isEmpty() && checkOpeningHoursOverlap(newOpeningHours)) {
+            throw new IllegalArgumentException("The new hours overlap with existing hours");
         }
         log.info("New opening hours succesfully added");
         openingHours.add(newOpeningHours);
-        return newOpeningHours;
     }
 
     private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh) {
@@ -189,4 +176,6 @@ public class Restaurant {
             throw new IllegalStateException("Restaurant is owner by " + this.ownerId.id() + " and not " + ownerId.id());
         }
     }
+
+
 }

@@ -38,6 +38,7 @@ public class RestaurantController {
     private final OrderService orders;
     private final RabbitTemplate rabbitTemplate;
     private final RabbitMQProperties rabbitMQProperties;
+    private static final String DATABASEID = "databaseid";
 
     public RestaurantController(RestaurantService restaurants, OrderService orders, RabbitTemplate rabbitTemplate,
                                 RabbitMQProperties rabbitMQProperties) {
@@ -54,7 +55,7 @@ public class RestaurantController {
     public ResponseEntity<NewRestaurantDto> create(@RequestBody RestaurantDto restaurantDto,
                                                    @AuthenticationPrincipal Jwt token) {
         Restaurant restaurant = restaurants.create(
-                new OwnerId(UUID.fromString(token.getClaimAsString("databaseid"))),
+                new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID))),
                 restaurantDto.name(),
                 restaurantDto.address(),
                 restaurantDto.contactEmail(),
@@ -103,7 +104,7 @@ public class RestaurantController {
                                                                             @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
 
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
         restaurants.checkOwnership(restaurantId, ownerId);
 
         List<Order> pendingOrders = orders.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.PENDING);
@@ -120,7 +121,7 @@ public class RestaurantController {
                                                       @AuthenticationPrincipal Jwt token) {
         final RestaurantId restaurantId = new RestaurantId(id);
         Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
         restaurant.checkIfOwnerBy(ownerId);
         List<Dish> allDishes = restaurant.getFullMenu();
 
@@ -161,7 +162,7 @@ public class RestaurantController {
                                                                @RequestParam final boolean open,
                                                                @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
         Restaurant restaurant = restaurants.openOrCloseRestaurant(restaurantId, open, ownerId);
 
@@ -170,14 +171,14 @@ public class RestaurantController {
 
     @PatchMapping("/{id}/resetOverwrite")
     @PreAuthorize("hasAuthority('owner')")
-    public ResponseEntity stopOpeningHoursOverwrite(@PathVariable final UUID id,
+    public ResponseEntity<RestaurantDto> stopOpeningHoursOverwrite(@PathVariable final UUID id,
                                                     @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        restaurants.resetOverwrite(restaurantId, ownerId);
+        final Restaurant restaurant = restaurants.resetOverwrite(restaurantId, ownerId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
     //Dishes
@@ -189,7 +190,7 @@ public class RestaurantController {
                                               @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
         Dish dish = restaurants.updateDish(restaurantId, dId, dishDto.name(), dishDto.description(), ownerId);
 
@@ -204,7 +205,7 @@ public class RestaurantController {
                                                    @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
         Dish dish = restaurants.updateDishState(restaurantId, dId, dishDto.state(), ownerId);
 
@@ -216,7 +217,7 @@ public class RestaurantController {
     public ResponseEntity<List<DishDto>> publishReadyDishes(@PathVariable final UUID id,
                                                             @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
         List<Dish> dishes = restaurants.publishReadyDishes(restaurantId, ownerId);
 
@@ -233,7 +234,7 @@ public class RestaurantController {
                                                                  @RequestBody DishScheduleDto dishScheduleDto,
                                                                  @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString("databaseid")));
+        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
         List<DishId> dishIds = dishScheduleDto.dishIds().stream().map(DishId::new).toList();
 
         List<Dish> updatedDishes = restaurants.publishDishesOnSchedule(restaurantId, dishScheduleDto.scheduledDate(), dishIds, ownerId);

@@ -4,6 +4,8 @@ import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -11,24 +13,24 @@ import java.util.UUID;
 @Table(name = "dishes")
 public class JpaDishEntity {
 
-    @Id
+    @Getter @Id
     private UUID id;
 
-    @Column
+    @Getter @Column
     private String name;
 
-    @Column
+    @Getter @Column
     @Enumerated(value = EnumType.STRING)
     private DishState state;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @Setter @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private JpaRestaurantEntity restaurant;
 
-    @Column
+    @Getter @Column
     private String description;
 
-    @Column
+    @Getter @Column
     private double price;
 
     protected JpaDishEntity(){}
@@ -61,27 +63,4 @@ public class JpaDishEntity {
         );
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public DishState getState() {
-        return state;
-    }
-
-    public void setRestaurant(JpaRestaurantEntity restaurant) {
-        this.restaurant = restaurant;
-    }
-
-    public double getPrice() {
-        return price;
-    }
 }

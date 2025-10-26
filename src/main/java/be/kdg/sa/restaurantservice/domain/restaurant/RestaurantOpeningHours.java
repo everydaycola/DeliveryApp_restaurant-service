@@ -1,12 +1,14 @@
 package be.kdg.sa.restaurantservice.domain.restaurant;
 
+import lombok.Getter;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-public class RestaurantOpeningHours {
-    private DayOfWeek day;
-    private LocalTime openingTime;
-    private LocalTime closingTime;
+@Getter public class RestaurantOpeningHours {
+    private final DayOfWeek day;
+    private final LocalTime openingTime;
+    private final LocalTime closingTime;
 
     public RestaurantOpeningHours(DayOfWeek day, LocalTime openingTime, LocalTime closingTime) {
         this.day = day;
@@ -14,15 +16,4 @@ public class RestaurantOpeningHours {
         this.closingTime = closingTime;
     }
 
-    public DayOfWeek getDay() {
-        return day;
-    }
-
-    public LocalTime getOpeningTime() {
-        return openingTime;
-    }
-
-    public LocalTime getClosingTime() {
-        return closingTime;
-    }
 }

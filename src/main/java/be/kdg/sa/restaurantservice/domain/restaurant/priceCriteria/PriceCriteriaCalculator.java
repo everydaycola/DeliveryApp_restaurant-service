@@ -5,5 +5,5 @@ import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import java.util.List;
 
 public interface PriceCriteriaCalculator {
-    PriceCriteria Calculate(List<Dish> menu);
+    PriceCriteria calculate(List<Dish> menu);
 }

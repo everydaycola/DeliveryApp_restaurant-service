@@ -62,15 +62,11 @@ public class JpaOrderEntity {
         order.setStatus(this.status);
 
         this.orderLines.forEach(jpaOrderLine ->
-                order.NewOrderLine(
+                order.newOrderLine(
                         jpaOrderLine.getQuantity(),
                         new DishId(jpaOrderLine.getDishId())));
 
         return order;
-    }
-
-    public void setOrderLines(List<JpaOrderLineEntity> orderLines) {
-        this.orderLines = orderLines;
     }
 
     public void addOrderLine(JpaOrderLineEntity orderLine) {

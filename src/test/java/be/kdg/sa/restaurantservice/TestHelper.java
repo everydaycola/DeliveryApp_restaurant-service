@@ -27,9 +27,8 @@ public class TestHelper {
         return restaurantEntity.toDomain();
     }
 
-    public Restaurant saveRestaurant(Restaurant restaurant){
+    public void saveRestaurant(Restaurant restaurant){
         jpaRestaurantRepository.save(JpaRestaurantEntity.fromDomain(restaurant));
-        return restaurant;
     }
 
     public void saveDish(RestaurantId restaurantId, String name, DishState state, String description, double price ){
@@ -37,12 +36,6 @@ public class TestHelper {
         JpaDishEntity dishEntity = new JpaDishEntity(UUID.randomUUID(), name, state, description, price);
         restaurantEntity.setMenu(List.of(dishEntity));
         jpaRestaurantRepository.save(restaurantEntity);
-    }
-
-    public void saveOpeningHours(RestaurantId restaurantId, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime closingTime){
-        JpaRestaurantEntity restaurantEntity = jpaRestaurantRepository.findById(restaurantId.id()).orElseThrow(RuntimeException::new);
-        JpaRestaurantOpeningHours openingHours  = new JpaRestaurantOpeningHours(UUID.randomUUID(), dayOfWeek, startTime, closingTime);
-        restaurantEntity.setOpeningHours(List.of(openingHours));
     }
 
     public void cleanUp(){

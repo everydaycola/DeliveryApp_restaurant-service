@@ -1,11 +1,13 @@
 package be.kdg.sa.restaurantservice.domain.dish;
 
-public class Dish {
-    private DishId id;
+import lombok.Getter;
+
+@Getter public class Dish {
+    private final DishId id;
     private String name;
     private DishState state;
     private String description;
-    private double price;
+    private final double price;
 
     public Dish(DishId id, String name, String description, double price) {
         this.id = id;
@@ -33,23 +35,4 @@ public class Dish {
         this.state = state;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public DishId getId() {
-        return id;
-    }
-
-    public DishState getState() {
-        return state;
-    }
-
-    public double getPrice() {
-        return price;
-    }
 }

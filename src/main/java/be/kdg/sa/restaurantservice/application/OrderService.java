@@ -56,7 +56,7 @@ public class OrderService {
 
     private void addOrderLineToOrder(UUID orderId, int quantity, DishId dishId){
         Order order = findByIdWithLines(orderId);
-        order.NewOrderLine(quantity,dishId);
+        order.newOrderLine(quantity, dishId);
         orders.save(order);
         log.info("Dish {} added to Order {}",dishId.id(),order.getOrderId().id());
     }

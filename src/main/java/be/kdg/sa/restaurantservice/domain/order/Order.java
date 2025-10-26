@@ -25,7 +25,7 @@ public class Order {
         this.orderLines = new ArrayList<>();
     }
 
-    public void NewOrderLine(int quantity, DishId dishId) {
+    public void newOrderLine(int quantity, DishId dishId) {
         var existingOrderLine = this.orderLines.stream()
                 .filter(ol -> ol.getDishId().equals(dishId))
                 .findFirst();
