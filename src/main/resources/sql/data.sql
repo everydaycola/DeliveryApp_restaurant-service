@@ -43,3 +43,21 @@ VALUES ('f6c0e1d3-52b8-4cb9-99cf-54b3a0e9a87f', '7f3037c6-a58d-402b-bcfc-def8157
        ('a6e1f2c3-3f17-49b4-94e5-8f7b1c9a4e90', '7f3037c6-a58d-402b-bcfc-def8157fdbfc', 'FRIDAY', '12:00', '22:00'),
        ('d3c2b4a7-62f8-4f52-8a9b-1c3e7e9a5c10', '7f3037c6-a58d-402b-bcfc-def8157fdbfc', 'SATURDAY', '12:00', '22:00'),
        ('e1a8c5b9-71e6-4e29-8d12-7c8b5e9f3a20', '7f3037c6-a58d-402b-bcfc-def8157fdbfc', 'SUNDAY', '12:00', '21:00');
+
+INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, is_open, overwrite_opening_hours)
+VALUES ('11111111-2222-3333-4444-555555555555', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        '24/7 Grill', 'Main Street', 1, 9000, 'Belgium', '247@example.com',
+        'AMERICAN', '247-logo.png', true, true);
+
+-- Insert dishes for 24/7 Grill
+INSERT INTO dishes (id, restaurant_id, name, description, state, price)
+VALUES ('aa111111-2222-3333-4444-555555555551', '11111111-2222-3333-4444-555555555555',
+        'Classic Cheeseburger', 'Juicy beef patty with cheddar cheese', 'PUBLISHED', 9.99),
+       ('aa111111-2222-3333-4444-555555555552', '11111111-2222-3333-4444-555555555555',
+        'Grillmaster Ribs', 'Slow-cooked BBQ ribs with special sauce', 'PUBLISHED', 17.49),
+       ('aa111111-2222-3333-4444-555555555553', '11111111-2222-3333-4444-555555555555',
+        'Chicken Wings', 'Crispy wings with a choice of sauces', 'PUBLISHED', 8.50),
+       ('aa111111-2222-3333-4444-555555555554', '11111111-2222-3333-4444-555555555555',
+        'Midnight Fries', 'Golden Belgian fries served any time', 'PUBLISHED', 4.25),
+       ('aa111111-2222-3333-4444-555555555555', '11111111-2222-3333-4444-555555555555',
+        'Pancake Stack', 'Fluffy pancakes with syrup — breakfast all day!', 'PUBLISHED', 6.75);
