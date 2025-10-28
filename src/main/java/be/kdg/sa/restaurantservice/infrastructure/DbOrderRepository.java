@@ -51,4 +51,10 @@ public class DbOrderRepository implements OrderRepository {
         return this.jpaOrderRepository.findByRestaurantIdAndOrderId(restaurantId.id(), orderId.id())
                 .map(JpaOrderEntity::toDomain);
     }
+
+    @Override
+    public Optional<Order> findByRestaurantIdAndOrderIdAndOrderStatus(RestaurantId restaurantId, OrderId orderId, OrderStatus orderStatus) {
+        return this.jpaOrderRepository.findByRestaurantIdAndOrderIdAndStatus(restaurantId.id(), orderId.id(), orderStatus)
+                .map(JpaOrderEntity::toDomain);
+    }
 }

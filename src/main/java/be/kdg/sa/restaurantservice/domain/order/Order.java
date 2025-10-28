@@ -4,9 +4,11 @@ import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
+@Slf4j
 public class Order {
     @Getter
     private final OrderId orderId;
@@ -26,6 +28,7 @@ public class Order {
     }
 
     public void newOrderLine(int quantity, DishId dishId) {
+        log.info("Adding order line for dish {}", dishId);
         var existingOrderLine = this.orderLines.stream()
                 .filter(ol -> ol.getDishId().equals(dishId))
                 .findFirst();
@@ -39,6 +42,7 @@ public class Order {
     }
 
     public void acceptOrReject(boolean accept){
+        log.info("{} order {}",accept ? "Accepting" : "Declining" , this.orderId);
         this.status.shouldBe(OrderStatus.PENDING);
         if (accept){
             this.status = OrderStatus.ACCEPTED;
@@ -48,6 +52,7 @@ public class Order {
     }
 
     public void ready(){
+        log.info("Setting order {} to ready", this.orderId);
         this.status.shouldBe(OrderStatus.ACCEPTED);
         this.status = OrderStatus.READY;
     }

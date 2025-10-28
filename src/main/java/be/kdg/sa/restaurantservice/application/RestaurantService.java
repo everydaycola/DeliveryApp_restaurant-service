@@ -10,18 +10,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 @Service
 public class RestaurantService {
     private final RestaurantRepository restaurants;
     private final DomainProperties domainProperties;
-    private final PublishDishesScheduler publishDishesScheduler;
+    private final RestaurantTaskScheduler restaurantTaskScheduler;
 
-    public RestaurantService(RestaurantRepository restaurants, DomainProperties domainProperties, PublishDishesScheduler publishDishesScheduler) {
+    public RestaurantService(RestaurantRepository restaurants, DomainProperties domainProperties, RestaurantTaskScheduler publishDishesScheduler) {
         this.restaurants = restaurants;
         this.domainProperties = domainProperties;
-        this.publishDishesScheduler = publishDishesScheduler;
+        this.restaurantTaskScheduler = publishDishesScheduler;
     }
 
     //Create
@@ -121,10 +120,7 @@ public class RestaurantService {
         Restaurant restaurant = findByIdWithMenu(id);
         restaurant.checkIfOwnerBy(ownerId);
 
-        publishDishesScheduler.scheduleTask(() ->
-                dishIds.forEach(dishId ->
-                        restaurant.updateDishState(dishId, DishState.PUBLISHED, domainProperties.getMaxDishes())),
-                scheduledDate);
+        restaurantTaskScheduler.ScheduleDishPublishing(scheduledDate, dishIds, restaurant, domainProperties.getMaxDishes());
 
         return dishIds.stream().map(restaurant::getDish).toList();
     }

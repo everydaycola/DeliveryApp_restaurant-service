@@ -1,5 +1,6 @@
 package be.kdg.sa.restaurantservice.application;
 
+import be.kdg.sa.restaurantservice.config.DomainProperties;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.order.*;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
@@ -15,18 +16,20 @@ import java.util.UUID;
 @Slf4j
 public class OrderService {
     private final OrderRepository orders;
+    private final RestaurantTaskScheduler restaurantTaskScheduler;
+    private final DomainProperties domainProperties;
 
-    public OrderService(OrderRepository orders) {
+    public OrderService(OrderRepository orders, RestaurantTaskScheduler restaurantTaskScheduler, DomainProperties domainProperties) {
         this.orders = orders;
+        this.restaurantTaskScheduler = restaurantTaskScheduler;
+        this.domainProperties = domainProperties;
     }
 
-    public Order findById(UUID id) {
-        OrderId orderId = new OrderId(id);
+    public Order findById(OrderId orderId) {
         return orders.findById(orderId).orElseThrow(orderId::notFound);
     }
 
-    public Order findByIdWithLines(UUID id){
-        OrderId orderId = new OrderId(id);
+    public Order findByIdWithLines(OrderId orderId){
         return orders.findByIdWithLines(orderId).orElseThrow(orderId::notFound);
     }
 
@@ -36,6 +39,10 @@ public class OrderService {
 
     private Order findByRestaurantIdAndOrderId(RestaurantId restaurantId, OrderId orderId){
         return orders.findByRestaurantIdAndOrderId(restaurantId,orderId).orElseThrow(orderId::notFound);
+    }
+
+    private Order findByRestaurantIdAndOrderIdAndStatus(RestaurantId restaurantId, OrderId orderId, OrderStatus orderStatus){
+        return orders.findByRestaurantIdAndOrderIdAndOrderStatus(restaurantId,orderId,orderStatus).orElseThrow(orderId::notFound);
     }
 
     public void placeOrder(OrderPlacedMessage message) {
@@ -52,10 +59,13 @@ public class OrderService {
                 addOrderLineToOrder(order.getOrderId().id(),orderLineDto.amount(),new DishId(UUID.fromString(orderLineDto.dishId())))
         );
         log.info("All lines of Order {} have been successfully added", order.getOrderId());
+
+        restaurantTaskScheduler.StartOrderTimeOut(resId, ordId, domainProperties.getOrderTimeout());
     }
 
     private void addOrderLineToOrder(UUID orderId, int quantity, DishId dishId){
-        Order order = findByIdWithLines(orderId);
+        OrderId orderID = new OrderId(orderId);
+        Order order = findByIdWithLines(orderID);
         order.newOrderLine(quantity, dishId);
         orders.save(order);
         log.info("Dish {} added to Order {}",dishId.id(),order.getOrderId().id());
