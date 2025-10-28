@@ -56,7 +56,8 @@ public class JpaRestaurantEntity {
     @Column
     private boolean overwriteOpeningHours;
 
-    protected JpaRestaurantEntity(){}
+    protected JpaRestaurantEntity() {
+    }
 
     public JpaRestaurantEntity(UUID id, UUID ownerId, String name, String street, int number, int postalCode, String country, String contactEmail, RestaurantType type, String logo, boolean isOpen, boolean overwriteOpeningHours) {
         this.id = id;
@@ -75,7 +76,7 @@ public class JpaRestaurantEntity {
         this.openingHours = new ArrayList<>();
     }
 
-    public static JpaRestaurantEntity fromDomain(Restaurant restaurant){
+    public static JpaRestaurantEntity fromDomain(Restaurant restaurant) {
         //Filling Jpa Object without the menu
         JpaRestaurantEntity jpaRestaurantEntity = new JpaRestaurantEntity(
                 restaurant.getId().id(),
@@ -90,24 +91,26 @@ public class JpaRestaurantEntity {
                 restaurant.getLogo(),
                 restaurant.isOpen(),
                 restaurant.isOverwriteOpeningHours()
-                );
+        );
 
         //Filling the Jpa Menu
-        List<JpaDishEntity> jpaDishEntities = restaurant.getFullMenu().stream()
+        jpaRestaurantEntity.setMenu(
+                restaurant.getFullMenu().stream()
                 .map(JpaDishEntity::fromDomain)
-                .toList();
-        jpaRestaurantEntity.setMenu(jpaDishEntities);
+                .toList()
+        );
 
         //Filling the Jpa Opening Hours
-        List<JpaRestaurantOpeningHours> jpaRestaurantOpeningHours = restaurant.getOpeningHours().stream()
+        jpaRestaurantEntity.setOpeningHours(
+                restaurant.getOpeningHours().stream()
                 .map(JpaRestaurantOpeningHours::fromDomain)
-                .toList();
-        jpaRestaurantEntity.setOpeningHours(jpaRestaurantOpeningHours);
+                .toList()
+        );
 
         return jpaRestaurantEntity;
     }
 
-    public Restaurant toDomain(){
+    public Restaurant toDomain() {
         Restaurant restaurant = new Restaurant(
                 new RestaurantId(id),
                 new OwnerId(ownerId),
@@ -120,20 +123,23 @@ public class JpaRestaurantEntity {
                 overwriteOpeningHours,
                 new MeanPriceCriteriaCalculator()
         );
-        menu.forEach(jpaDish ->
-            restaurant.addDishFromRepository(jpaDish.getId(), jpaDish.getName(), jpaDish.getDescription(), jpaDish.getState(), jpaDish.getPrice()));
+        menu.stream()
+                .map(JpaDishEntity::toDomain)
+                .forEach(restaurant::addDishFromRepository);
 
-        openingHours.forEach(jpaRoh ->
-                restaurant.addOpeningHours(jpaRoh.getDay(), jpaRoh.getOpeningTime(), jpaRoh.getClosingTime()));
+        openingHours.stream()
+                .map(JpaRestaurantOpeningHours::toDomain)
+                .forEach(restaurant::addOpeningHours);
+
         return restaurant;
     }
 
-    public void setMenu(List<JpaDishEntity> menu){
+    public void setMenu(List<JpaDishEntity> menu) {
         this.menu = menu;
         this.menu.forEach(dish -> dish.setRestaurant(this));
     }
 
-    public void setOpeningHours(List<JpaRestaurantOpeningHours> openingHours){
+    public void setOpeningHours(List<JpaRestaurantOpeningHours> openingHours) {
         this.openingHours = openingHours;
         this.openingHours.forEach(roh -> roh.setRestaurant(this));
     }

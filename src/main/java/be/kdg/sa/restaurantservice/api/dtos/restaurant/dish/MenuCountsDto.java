@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.api.dtos;
+package be.kdg.sa.restaurantservice.api.dtos.restaurant.dish;
 
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;

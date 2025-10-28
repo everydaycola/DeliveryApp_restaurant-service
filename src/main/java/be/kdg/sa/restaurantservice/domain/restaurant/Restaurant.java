@@ -110,13 +110,12 @@ public class Restaurant {
         return newDish;
     }
 
-    public void addDishFromRepository(UUID dishId, String dishName, String description, DishState state, double price) {
-        Dish newDish = new Dish(new DishId(dishId), dishName, state, description, price);
-        this.menu.add(newDish);
+    public void addDishFromRepository(Dish dish) {
+        this.menu.add(dish);
 
         calculatePriceCriteria(priceCriteriaCalculator);
 
-        log.info("Dish {} added to {} from repository", newDish.getName(), this.getName());
+        log.info("Dish {} added to {} from repository", dish.getName(), this.getName());
     }
 
     public Dish updateDish(DishId id, String name, String description) {
@@ -152,13 +151,12 @@ public class Restaurant {
     }
 
     //OpeningHours Aggregate
-    public void addOpeningHours(DayOfWeek day, LocalTime start, LocalTime end) {
-        RestaurantOpeningHours newOpeningHours = new RestaurantOpeningHours(day, start, end);
-        if (!openingHours.isEmpty() && checkOpeningHoursOverlap(newOpeningHours)) {
+    public void addOpeningHours(RestaurantOpeningHours newOpeningHours) {
+        if (!this.openingHours.isEmpty() && checkOpeningHoursOverlap(newOpeningHours)) {
             throw new IllegalArgumentException("The new hours overlap with existing hours");
         }
         log.info("New opening hours succesfully added");
-        openingHours.add(newOpeningHours);
+        this.openingHours.add(newOpeningHours);
     }
 
     private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh) {

@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.api.dtos;
+package be.kdg.sa.restaurantservice.api.dtos.order;
 
 
 import be.kdg.sa.restaurantservice.domain.order.OrderLine;

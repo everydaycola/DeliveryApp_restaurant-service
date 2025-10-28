@@ -39,9 +39,9 @@ Content-Type: application/json
   "name": "Lekker eten",
   "address": {
     "street": "meir",
-    "country": "belgium",
     "number": 16,
-    "postalCode": 2000
+    "postalCode": 2000,
+    "country": "belgium"
   },
   "type": "AMERICAN",
   "openingHours": [
@@ -77,8 +77,7 @@ Content-Type: application/json
     }
   ],
   "logo": "2025-09-30T152345.png",
-  "contactEmail": "ilja.nachterhaele@student.kdg.be",
-  "description": "A restaurant for testing"
+  "contactEmail": "lekker.eten@student.kdg.be"
 }
 
 ### Get all restaurants

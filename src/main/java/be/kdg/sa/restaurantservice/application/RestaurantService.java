@@ -1,7 +1,6 @@
 package be.kdg.sa.restaurantservice.application;
 
-import be.kdg.sa.restaurantservice.api.dtos.AddressDto;
-import be.kdg.sa.restaurantservice.api.dtos.RestaurantOpeningHoursDto;
+import be.kdg.sa.restaurantservice.api.dtos.restaurant.NewRestaurantDto;
 import be.kdg.sa.restaurantservice.config.DomainProperties;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
@@ -25,18 +24,12 @@ public class RestaurantService {
 
     //Create
     //Restaurant
-    public Restaurant create(OwnerId ownerId, String name, AddressDto addressDto, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHoursDtos, String logo) {
-        //Convert AddressDto -> Address
-        Address address = new Address(addressDto.street(), addressDto.number(), addressDto.postalCode(), addressDto.country());
-
-        //Create Restaurant
-        final Restaurant restaurant = new Restaurant(ownerId, name, address, contactEmail, type, logo);
-
-        //Convert RestaurantOpeningHoursDto -> RestaurantOpeningHours
-        openingHoursDtos.forEach(rohDto -> restaurant.addOpeningHours(rohDto.day(),rohDto.openingTime(), rohDto.closingTime()));
-
+    public Restaurant create(
+            OwnerId ownerId,
+            NewRestaurantDto newRestaurant
+    ) {
+        final Restaurant restaurant = newRestaurant.toRestaurant(ownerId);
         restaurants.save(restaurant);
-
         return restaurant;
     }
 
@@ -113,7 +106,6 @@ public class RestaurantService {
         restaurant.checkIfOwnerBy(ownerId);
         Dish dish = restaurant.updateDish(dishId, name, description);
         restaurants.save(restaurant);
-
         return dish;
     }
 
@@ -121,9 +113,7 @@ public class RestaurantService {
        Restaurant restaurant = findByIdWithMenu(restaurantId);
        restaurant.checkIfOwnerBy(ownerId);
        Dish dish = restaurant.updateDishState(dishId, state, domainProperties.getMaxDishes());
-
        restaurants.save(restaurant);
-
        return dish;
     }
 

@@ -1,5 +1,6 @@
-package be.kdg.sa.restaurantservice.api.dtos;
+package be.kdg.sa.restaurantservice.api.dtos.restaurant;
 
+import be.kdg.sa.restaurantservice.api.dtos.restaurant.dish.MenuCountsDto;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantType;
 import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteria;

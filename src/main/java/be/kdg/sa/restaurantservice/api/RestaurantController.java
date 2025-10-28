@@ -1,11 +1,9 @@
 package be.kdg.sa.restaurantservice.api;
 
-import be.kdg.sa.restaurantservice.api.dtos.OrderMessagingDto;
-import be.kdg.sa.restaurantservice.api.dtos.OrderDto;
-import be.kdg.sa.restaurantservice.api.dtos.DishDto;
-import be.kdg.sa.restaurantservice.api.dtos.DishScheduleDto;
-import be.kdg.sa.restaurantservice.api.dtos.NewRestaurantDto;
-import be.kdg.sa.restaurantservice.api.dtos.RestaurantDto;
+import be.kdg.sa.restaurantservice.api.dtos.order.OrderDto;
+import be.kdg.sa.restaurantservice.api.dtos.order.OrderMessagingDto;
+import be.kdg.sa.restaurantservice.api.dtos.restaurant.*;
+import be.kdg.sa.restaurantservice.api.dtos.restaurant.dish.*;
 import be.kdg.sa.restaurantservice.application.OrderService;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.config.RabbitMQProperties;
@@ -52,28 +50,24 @@ public class RestaurantController {
     //Restaurant
     @PostMapping
     @PreAuthorize("hasAuthority('owner')")
-    public ResponseEntity<NewRestaurantDto> create(@RequestBody RestaurantDto restaurantDto,
-                                                   @AuthenticationPrincipal Jwt token) {
+    public ResponseEntity<RestaurantDto> create(@RequestBody NewRestaurantDto newRestaurantDto,
+                                                       @AuthenticationPrincipal Jwt token) {
         Restaurant restaurant = restaurants.create(
                 new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID))),
-                restaurantDto.name(),
-                restaurantDto.address(),
-                restaurantDto.contactEmail(),
-                restaurantDto.type(),
-                restaurantDto.openingHours(),
-                restaurantDto.logo());
+                newRestaurantDto
+        );
 
-        NewRestaurantDto result = NewRestaurantDto.from(restaurant);
+        RestaurantDto result = RestaurantDto.from(restaurant);
 
         return ResponseEntity.ok(result);
     }
 
     //Dishes
     @PostMapping("/{id}/menu")
-    public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody DishDto dishDto){
+    public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody NewDishDto newDishDto){
         final RestaurantId restaurantId = new RestaurantId(id);
 
-        Dish dish = restaurants.createDish(restaurantId, dishDto.name(), dishDto.description(), dishDto.price());
+        Dish dish = restaurants.createDish(restaurantId, newDishDto.name(), newDishDto.description(), newDishDto.price());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -186,7 +180,7 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<DishDto> updateDish(@PathVariable final UUID id,
                                               @PathVariable final UUID dishId,
-                                              @RequestBody DishDto dishDto,
+                                              @RequestBody UpdateDishDto dishDto,
                                               @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
@@ -201,13 +195,13 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<DishDto> changeDishState(@PathVariable final UUID id,
                                                    @PathVariable final UUID dishId,
-                                                   @RequestBody DishDto dishDto,
+                                                   @RequestBody UpdateDishStateDto dishStateDto,
                                                    @AuthenticationPrincipal Jwt token){
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        Dish dish = restaurants.updateDishState(restaurantId, dId, dishDto.state(), ownerId);
+        Dish dish = restaurants.updateDishState(restaurantId, dId, dishStateDto.state(), ownerId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }

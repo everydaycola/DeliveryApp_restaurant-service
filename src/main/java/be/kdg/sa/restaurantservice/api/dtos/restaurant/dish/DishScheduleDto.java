@@ -1,4 +1,4 @@
-package be.kdg.sa.restaurantservice.api.dtos;
+package be.kdg.sa.restaurantservice.api.dtos.restaurant.dish;
 
 import java.util.Date;
 import java.util.List;

@@ -44,4 +44,8 @@ public class JpaRestaurantOpeningHours {
         return new JpaRestaurantOpeningHours(UUID.randomUUID(), roh.getDay(), roh.getOpeningTime(), roh.getClosingTime());
     }
 
+    public RestaurantOpeningHours toDomain() {
+        return new RestaurantOpeningHours(day, openingTime, closingTime);
+    }
+
 }
