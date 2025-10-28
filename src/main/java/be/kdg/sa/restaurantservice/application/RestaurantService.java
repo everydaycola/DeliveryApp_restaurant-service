@@ -16,10 +16,12 @@ import java.util.Timer;
 public class RestaurantService {
     private final RestaurantRepository restaurants;
     private final DomainProperties domainProperties;
+    private final PublishDishesScheduler publishDishesScheduler;
 
-    public RestaurantService(RestaurantRepository restaurants, DomainProperties domainProperties) {
+    public RestaurantService(RestaurantRepository restaurants, DomainProperties domainProperties, PublishDishesScheduler publishDishesScheduler) {
         this.restaurants = restaurants;
         this.domainProperties = domainProperties;
+        this.publishDishesScheduler = publishDishesScheduler;
     }
 
     //Create
@@ -119,8 +121,10 @@ public class RestaurantService {
         Restaurant restaurant = findByIdWithMenu(id);
         restaurant.checkIfOwnerBy(ownerId);
 
-        //restaurant is saved in PublishDishesTask to the repository
-        new Timer().schedule(new PublishDishesTask(restaurants, domainProperties.getMaxDishes(), restaurant, dishIds), scheduledDate);
+        publishDishesScheduler.scheduleTask(() ->
+                dishIds.forEach(dishId ->
+                        restaurant.updateDishState(dishId, DishState.PUBLISHED, domainProperties.getMaxDishes())),
+                scheduledDate);
 
         return dishIds.stream().map(restaurant::getDish).toList();
     }

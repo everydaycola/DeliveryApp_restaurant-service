@@ -176,7 +176,7 @@ Authorization: Bearer {{access_token_owner1}}
 Content-Type: application/json
 
 {
-  "scheduledDate": "2025-10-19T09:00:00+02:00",
+  "scheduledDate": "2025-10-28T18:07:00+01:00",
   "dishIds": [
     "{{resto1dish2}}",
     "{{resto1dish3}}"
