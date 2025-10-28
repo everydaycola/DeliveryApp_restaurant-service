@@ -3,6 +3,7 @@ package be.kdg.sa.restaurantservice.infrastructure;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
+import be.kdg.sa.restaurantservice.domain.restaurant.OverrideStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantRepository;
@@ -38,6 +39,15 @@ public class DbRestaurantRepository implements RestaurantRepository {
     @Override
     public List<Restaurant> findAll() {
         return this.jpaRestaurantRepository.findAll().stream()
+                .map(JpaRestaurantEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Restaurant> findAllWithOverride() {
+        return this.jpaRestaurantRepository.findAllByOverrideStatusNot(OverrideStatus.NONE)
+                .orElse(List.of())
+                .stream()
                 .map(JpaRestaurantEntity::toDomain)
                 .toList();
     }

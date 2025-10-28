@@ -44,29 +44,19 @@ public class RestaurantService {
     //Find
     //Restaurant
     public Restaurant findById(RestaurantId restaurantId) {
-        Restaurant restaurant = restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
-        if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
-        return restaurant;
+        return restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
     public Restaurant findByIdWithMenu(RestaurantId restaurantId){
-        Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
-        if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
-        return restaurant;
+        return restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
     public Restaurant findByIdWithMenuAndOpeningHours(RestaurantId restaurantId){
-        Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId).orElseThrow(restaurantId::notFound);
-        if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
-        return restaurant;
+        return restaurants.findByIdWithMenuAndOpeningHours(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
     public List<Restaurant> findAll() {
-        List<Restaurant> restos = restaurants.findAll();
-        restos.forEach(restaurant -> {
-            if (!restaurant.isOverwriteOpeningHours()) checkIfOpenAndUpdate(restaurant);
-        });
-        return restos;
+        return restaurants.findAll();
     }
 
     //Dish
@@ -76,11 +66,6 @@ public class RestaurantService {
 
     //Update
     //Restaurant
-    private void checkIfOpenAndUpdate(Restaurant restaurant){
-        restaurant.checkIfOpen();
-        restaurants.save(restaurant);
-    }
-
     public Restaurant openOrCloseRestaurant(RestaurantId restaurantId, boolean isOpen, OwnerId ownerId){
         Restaurant restaurant =  findById(restaurantId);
         restaurant.checkIfOwnerBy(ownerId);

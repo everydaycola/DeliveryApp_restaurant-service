@@ -1,7 +1,7 @@
 -- Insert Pasta Palace
-INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, is_open,overwrite_opening_hours)
+INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, override_status)
 VALUES ('dab961f7-5441-4827-a55e-7fcbc86a8fb2', '803afbdd-a7dc-4735-bbf4-526d99cbf686', 'Pasta Palace', 'Cederlaan', 35,
-        2600, 'Belgium', 'pasta@example.com', 'ITALIAN', 'pasta-logo.png',false,false);
+        2600, 'Belgium', 'pasta@example.com', 'ITALIAN', 'pasta-logo.png','NONE');
 
 -- Insert dishes for Pasta Palace
 INSERT INTO dishes (id, restaurant_id, name, description, state, price)
@@ -22,9 +22,9 @@ VALUES ('e8f2ab29-5a78-4f16-8a36-23fca9fdbd21', 'dab961f7-5441-4827-a55e-7fcbc86
        ('b4f2d915-3c24-4d8f-b7a7-8c26f9ea5a42', 'dab961f7-5441-4827-a55e-7fcbc86a8fb2', 'SUNDAY', '11:30', '21:00');
 
 -- Insert Sushi World
-INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, is_open,overwrite_opening_hours )
+INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, override_status )
 VALUES ('7f3037c6-a58d-402b-bcfc-def8157fdbfc', '82090ea4-05d5-4d95-97de-e33760ac73f9', 'Sushi World', 'Kapellestraat',
-        12, 1000, 'Belgium', 'sushi@example.com', 'JAPANESE', 'sushi-logo.png', false,false);
+        12, 1000, 'Belgium', 'sushi@example.com', 'JAPANESE', 'sushi-logo.png', 'NONE');
 
 -- Insert dishes for Sushi World
 INSERT INTO dishes (id, restaurant_id, name, description, state, price)
@@ -44,10 +44,10 @@ VALUES ('f6c0e1d3-52b8-4cb9-99cf-54b3a0e9a87f', '7f3037c6-a58d-402b-bcfc-def8157
        ('d3c2b4a7-62f8-4f52-8a9b-1c3e7e9a5c10', '7f3037c6-a58d-402b-bcfc-def8157fdbfc', 'SATURDAY', '12:00', '22:00'),
        ('e1a8c5b9-71e6-4e29-8d12-7c8b5e9f3a20', '7f3037c6-a58d-402b-bcfc-def8157fdbfc', 'SUNDAY', '12:00', '21:00');
 
-INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, is_open, overwrite_opening_hours)
+INSERT INTO restaurants (id, owner_id, name, street, number, postal_code, country, contact_email, type, logo, override_status)
 VALUES ('11111111-2222-3333-4444-555555555555', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
         '24/7 Grill', 'Main Street', 1, 9000, 'Belgium', '247@example.com',
-        'AMERICAN', '247-logo.png', true, true);
+        'AMERICAN', '247-logo.png', 'NONE');
 
 -- Insert dishes for 24/7 Grill
 INSERT INTO dishes (id, restaurant_id, name, description, state, price)

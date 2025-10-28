@@ -11,6 +11,7 @@ public interface RestaurantRepository {
     Optional<Restaurant> findById(RestaurantId restaurantId);
     void save(Restaurant restaurant);
     List<Restaurant> findAll();
+    List<Restaurant> findAllWithOverride();
     Optional<Restaurant> findByIdWithMenu(RestaurantId restaurantId);
     Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId);
     Optional<Dish> findDishById(RestaurantId restaurantId, DishId dishId);

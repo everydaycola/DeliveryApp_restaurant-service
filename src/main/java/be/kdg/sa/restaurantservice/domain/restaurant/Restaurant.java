@@ -34,7 +34,7 @@ public class Restaurant {
     @Getter
     private final List<RestaurantOpeningHours> openingHours;
     @Getter
-    private PriceCriteria priceCriteria;
+    private static PriceCriteria priceCriteria;
     private PriceCriteriaCalculator priceCriteriaCalculator;
     private final List<Dish> menu;
     @Getter
@@ -42,13 +42,25 @@ public class Restaurant {
     @Getter
     private boolean isOpen;
     @Getter
-    private boolean overwriteOpeningHours;
+    private OverrideStatus overrideStatus;
 
     public Restaurant(OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo) {
-        this(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo, false, false, new MeanPriceCriteriaCalculator());
+        this(RestaurantId.create(), ownerId, name, address, contactEmail, type, logo, new ArrayList<>(), new ArrayList<>(), OverrideStatus.NONE, new MeanPriceCriteriaCalculator());
     }
 
-    public Restaurant(RestaurantId id, OwnerId ownerId, String name, Address address, String contactEmail, RestaurantType type, String logo, boolean isOpen, boolean overwriteOpeningHours, PriceCriteriaCalculator priceCriteriaCalculator) {
+    public Restaurant(
+            RestaurantId id,
+            OwnerId ownerId,
+            String name,
+            Address address,
+            String contactEmail,
+            RestaurantType type,
+            String logo,
+            List<RestaurantOpeningHours> openingHours,
+            List<Dish> menu,
+            OverrideStatus overrideStatus,
+            PriceCriteriaCalculator priceCriteriaCalculator
+    ) {
         this.id = id;
         this.ownerId = ownerId;
         this.name = name;
@@ -56,46 +68,44 @@ public class Restaurant {
         this.contactEmail = contactEmail;
         this.type = type;
         this.logo = logo;
-        this.openingHours = new ArrayList<>();
-        this.menu = new ArrayList<>();
-        this.isOpen = isOpen;
-        this.overwriteOpeningHours = overwriteOpeningHours;
+        this.openingHours = openingHours;
+        this.menu = menu;
+        this.overrideStatus = overrideStatus;
         this.priceCriteriaCalculator = priceCriteriaCalculator;
+        this.isOpen = checkIfOpen();
     }
 
-    public void checkIfOpen() {
-
-        log.info("Checking if Restaurant {} is open", this.name);
-
+    private boolean checkIfOpen() {
+        if (!this.overrideStatus.equals(OverrideStatus.NONE)) return this.overrideStatus.getIsOpen();
         LocalDateTime now = LocalDateTime.now();
-        isOpen = openingHours.stream()
+        return openingHours.stream()
                 .filter(roh -> roh.getDay().equals(now.getDayOfWeek()))
                 .anyMatch(roh -> roh.getOpeningTime().isBefore(now.toLocalTime()) &&
                         roh.getClosingTime().isAfter(now.toLocalTime()));
     }
 
-    public void open(boolean isOpen){
+    public void open(boolean isOpen) {
         this.isOpen = isOpen;
-        this.overwriteOpeningHours = true;
+        this.overrideStatus = OverrideStatus.fromBoolean(isOpen);
 
         log.info("Restaurant {} is now {} and standard opening hours are overwritten", this.name, isOpen? "open" : "closed");
     }
 
     public void stopOverwriteOpeningHours(){
-        this.overwriteOpeningHours = false;
+        this.overrideStatus = OverrideStatus.NONE;
 
         log.info("Restaurant {} returns to normal opening hours", this.name);
     }
 
-    private void calculatePriceCriteria(PriceCriteriaCalculator priceCriteriaCalculator) {
-        this.priceCriteria = priceCriteriaCalculator.calculate(menu);
-        log.info("PriceCriteria of {} set to {}",this.name, this.priceCriteria);
+    private void calculatePriceCriteria() {
+        priceCriteria = priceCriteriaCalculator.calculate(menu);
+        log.info("PriceCriteria of {} set to {}",this.name, priceCriteria);
     }
 
     // unused currently but allows future strategy changes
     public void changePriceCalculatorStrategy(PriceCriteriaCalculator priceCriteriaCalculator) {
         this.priceCriteriaCalculator = priceCriteriaCalculator;
-        calculatePriceCriteria(priceCriteriaCalculator);
+        calculatePriceCriteria();
     }
 
     //Dish Aggregate
@@ -105,23 +115,15 @@ public class Restaurant {
 
         log.info("New dish {} added to {}", newDish.getName(), this.getName());
 
-        this.calculatePriceCriteria(priceCriteriaCalculator);
+        this.calculatePriceCriteria();
 
         return newDish;
-    }
-
-    public void addDishFromRepository(Dish dish) {
-        this.menu.add(dish);
-
-        calculatePriceCriteria(priceCriteriaCalculator);
-
-        log.info("Dish {} added to {} from repository", dish.getName(), this.getName());
     }
 
     public Dish updateDish(DishId id, String name, String description) {
         Dish dish = this.getDish(id);
         dish.updateDish(name, description);
-        calculatePriceCriteria(priceCriteriaCalculator);
+        calculatePriceCriteria();
 
         log.info("Dish {} updated", dish.getId());
 

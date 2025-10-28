@@ -1,14 +1,18 @@
 package be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant;
 
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
+import be.kdg.sa.restaurantservice.domain.restaurant.OverrideStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface JpaRestaurantRepository extends JpaRepository<JpaRestaurantEntity, UUID> {
+
+    Optional<List<JpaRestaurantEntity>> findAllByOverrideStatusNot(OverrideStatus overwriteStatus);
 
     @Query(value = """
             select r
