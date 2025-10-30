@@ -8,7 +8,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria.PriceCriteria
 import java.util.List;
 import java.util.UUID;
 
-public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto address, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHours, String logo, MenuCountsDto menuCounts, boolean isOpen) {
+public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto address, String contactEmail, RestaurantType type, List<RestaurantOpeningHoursDto> openingHours, String logo, MenuCountsDto menuCounts, boolean isOpen, String priceCriteria) {
     public static RestaurantDto from(Restaurant restaurant) {
         return new RestaurantDto(
                 restaurant.getId().id(),
@@ -20,7 +20,8 @@ public record RestaurantDto(UUID id, UUID ownerId, String name, AddressDto addre
                 restaurant.getOpeningHours().stream().map(RestaurantOpeningHoursDto::from).toList(),
                 restaurant.getLogo(),
                 MenuCountsDto.from(restaurant.getFullMenu()),
-                restaurant.isOpen()
+                restaurant.isOpen(),
+                restaurant.getPriceCriteria().toString()
                 );
     }
 }

@@ -8,7 +8,13 @@
 @owner2=82090ea4-05d5-4d95-97de-e33760ac73f9
 @owner2username=shigerumiyamoto
 @owner2password=owner
+@owner3=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+@owner3username=jamesgarfield
+@owner3password=owner
 @order1=550e8400-e29b-41d4-a716-446655440000
+
+@grill=11111111-2222-3333-4444-555555555555
+@myorder=ab6e2a26-1e7f-4827-a8ea-6c16f4852e9b
 
 ### Get access token for owner1
 POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
@@ -28,6 +34,16 @@ client_id=keepdishesgoing&client_secret=nH15XuASyBvX9CO6dtlFHldj8wQgP7Ya&usernam
 
 > {%
     client.global.set("access_token_owner2", response.body.access_token);
+%}
+
+### Get access token for owner3
+POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner3username}}&password={{owner3password}}&grant_type=password&scope=openid
+
+> {%
+    client.global.set("access_token_owner3", response.body.access_token);
 %}
 
 ### Create a new restaurant

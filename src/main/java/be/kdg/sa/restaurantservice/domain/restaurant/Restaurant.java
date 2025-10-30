@@ -9,12 +9,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @AggregateRoot
 @Slf4j
@@ -34,7 +31,7 @@ public class Restaurant {
     @Getter
     private final List<RestaurantOpeningHours> openingHours;
     @Getter
-    private static PriceCriteria priceCriteria;
+    private PriceCriteria priceCriteria;
     private PriceCriteriaCalculator priceCriteriaCalculator;
     private final List<Dish> menu;
     @Getter
@@ -73,6 +70,7 @@ public class Restaurant {
         this.overrideStatus = overrideStatus;
         this.priceCriteriaCalculator = priceCriteriaCalculator;
         this.isOpen = checkIfOpen();
+        calculatePriceCriteria();
     }
 
     private boolean checkIfOpen() {
