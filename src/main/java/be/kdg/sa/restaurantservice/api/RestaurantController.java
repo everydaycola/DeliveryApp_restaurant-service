@@ -241,10 +241,12 @@ public class RestaurantController {
 
     //Messaging (RabbitMQ)
     @PatchMapping("/{id}/orders/{orderId}/accept")
+    @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<OrderDto> acceptOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
         final RestaurantId restaurantId = new RestaurantId(id);
         final OrderId ordId = new OrderId(orderId);
 
+        // todo there is no point accepting it here if you never use the updated enum afterwards
         Order order = orders.acceptOrder(restaurantId,ordId, true);
 
         rabbitTemplate.convertAndSend(
@@ -257,6 +259,7 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{id}/orders/{orderId}/reject")
+    @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<OrderDto> rejectOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
         final RestaurantId restaurantId = new RestaurantId(id);
         final OrderId ordId = new OrderId(orderId);
@@ -273,6 +276,7 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{id}/orders/{orderId}/ready")
+    @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<OrderDto> readyOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
         final RestaurantId restaurantId = new RestaurantId(id);
         final OrderId ordId = new OrderId(orderId);

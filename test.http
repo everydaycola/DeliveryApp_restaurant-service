@@ -20,7 +20,7 @@
 POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-client_id=keepdishesgoing&client_secret=nH15XuASyBvX9CO6dtlFHldj8wQgP7Ya&username={{owner1username}}&password={{owner1password}}&grant_type=password&scope=openid
+client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner1username}}&password={{owner1password}}&grant_type=password&scope=openid
 
 > {%
     client.global.set("access_token_owner1", response.body.access_token);
@@ -30,7 +30,7 @@ client_id=keepdishesgoing&client_secret=nH15XuASyBvX9CO6dtlFHldj8wQgP7Ya&usernam
 POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-client_id=keepdishesgoing&client_secret=nH15XuASyBvX9CO6dtlFHldj8wQgP7Ya&username={{owner2username}}&password={{owner2password}}&grant_type=password&scope=openid
+client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner2username}}&password={{owner2password}}&grant_type=password&scope=openid
 
 > {%
     client.global.set("access_token_owner2", response.body.access_token);
@@ -201,9 +201,12 @@ Content-Type: application/json
 
 ### Accept a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/accept
+Authorization: Bearer {{access_token_owner1}}
 
 ### Reject a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/reject
+Authorization: Bearer {{access_token_owner1}}
 
 ### Ready an accepted order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/ready
+Authorization: Bearer {{access_token_owner1}}
