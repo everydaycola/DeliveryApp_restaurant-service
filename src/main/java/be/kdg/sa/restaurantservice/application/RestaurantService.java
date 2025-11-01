@@ -6,12 +6,14 @@ import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
 import be.kdg.sa.restaurantservice.domain.restaurant.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class RestaurantService {
     private final RestaurantRepository restaurants;
     private final DomainProperties domainProperties;
@@ -27,11 +29,19 @@ public class RestaurantService {
     //Restaurant
     public Restaurant create(
             OwnerId ownerId,
-            NewRestaurantDto newRestaurant
+            NewRestaurantDto newRestaurantDto
     ) {
-        final Restaurant restaurant = newRestaurant.toRestaurant(ownerId);
-        restaurants.save(restaurant);
-        return restaurant;
+        log.info("Creating restaurant for owner {}", ownerId.id());
+        return (Restaurant) restaurants.findByOwnerId(ownerId)
+                .map(found -> {
+                    log.error("Owner {} already has a restaurant: {} ({})", ownerId.id(), found.getName(), found.getId());
+                    throw new IllegalStateException(String.format("Owner (%s) already has a restaurant: %s (%s)", ownerId.id(), found.getName(), found.getId()));
+                })
+                .orElseGet(() -> {
+                    final Restaurant newRestaurant = newRestaurantDto.toRestaurant(ownerId);
+                    restaurants.save(newRestaurant);
+                    return newRestaurant;
+                });
     }
 
     //Dish
@@ -46,6 +56,11 @@ public class RestaurantService {
     //Restaurant
     public Restaurant findById(RestaurantId restaurantId) {
         return restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
+    }
+
+    public Restaurant findByOwnerId(OwnerId ownerId) {
+        log.info("Finding restaurant for owner {}", ownerId.id());
+        return restaurants.findByOwnerId(ownerId).orElseThrow(ownerId::restaurantNotFound);
     }
 
     public Restaurant findByIdWithMenu(RestaurantId restaurantId){

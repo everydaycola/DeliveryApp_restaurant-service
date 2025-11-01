@@ -11,6 +11,10 @@
 @owner3=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
 @owner3username=jamesgarfield
 @owner3password=owner
+@owner4=82090ea4-05d5-4d95-97de-e33760ac2468
+@owner4username=remcomeert
+@owner4password=owner
+
 @order1=550e8400-e29b-41d4-a716-446655440000
 
 @grill=11111111-2222-3333-4444-555555555555
@@ -23,7 +27,7 @@ Content-Type: application/x-www-form-urlencoded
 client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner1username}}&password={{owner1password}}&grant_type=password&scope=openid
 
 > {%
-    client.global.set("access_token_owner1", response.body.access_token);
+    client.global.set("session_token", response.body.access_token);
 %}
 
 ### Get access token for owner2
@@ -33,22 +37,32 @@ Content-Type: application/x-www-form-urlencoded
 client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner2username}}&password={{owner2password}}&grant_type=password&scope=openid
 
 > {%
-    client.global.set("access_token_owner2", response.body.access_token);
+    client.global.set("session_token", response.body.access_token);
 %}
 
-### Get access token for owner3
+### Get access token for owner3, grill owner
 POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner3username}}&password={{owner3password}}&grant_type=password&scope=openid
 
 > {%
-    client.global.set("access_token_owner3", response.body.access_token);
+    client.global.set("session_token", response.body.access_token);
+%}
+
+### Get access token for owner4, no restaurant yet
+POST http://localhost:8180/realms/keepdishesgoing/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=keepdishesgoing&client_secret=GXg3zjaA8qrRFWFU06yhLrvLVI877xYE&username={{owner4username}}&password={{owner4password}}&grant_type=password&scope=openid
+
+> {%
+    client.global.set("session_token", response.body.access_token);
 %}
 
 ### Create a new restaurant
 POST http://localhost:8081/api/restaurants
-Authorization: Bearer {{access_token_owner2}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -99,6 +113,10 @@ Content-Type: application/json
 ### Get all restaurants
 GET http://localhost:8081/api/restaurants
 
+### Get all restaurants
+GET http://localhost:8081/api/restaurants/mine
+Authorization: Bearer {{session_token}}
+
 ### Get a specific restaurant by ID
 GET http://localhost:8081/api/restaurants/{{restaurant1}}
 
@@ -107,11 +125,11 @@ GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu
 
 ### Get the full menu of a restaurant
 GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu_full
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 
 ### Create a new dish for a restaurant
 POST http://localhost:8081/api/restaurants/{{restaurant1}}/menu
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -123,11 +141,11 @@ Content-Type: application/json
 
 ### Get a specific dish from a restaurant
 GET http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish1}}
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 
 ### Update a dish's state
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish3}}/state
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -136,17 +154,17 @@ Content-Type: application/json
 
 ### Open or close a restaurant
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}?open=true
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 ### Reset overwrite opening hours
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/resetOverwrite
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 ### Update a dish (name & description)
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -156,7 +174,7 @@ Content-Type: application/json
 
 ### Update dish1's state to ready for publishing (prep)
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish1}}/state
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -165,7 +183,7 @@ Content-Type: application/json
 
 ### Update dish2's state to ready for publishing (prep)
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}/state
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -174,12 +192,12 @@ Content-Type: application/json
 
 ### Publish all ready dishes
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/publish_ready
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 ### Update dish2's state to ready for publishing
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/{{resto1dish2}}/state
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -188,7 +206,7 @@ Content-Type: application/json
 
 ### Schedule dishes for future publishing
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/menu/publish_schedule
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 Content-Type: application/json
 
 {
@@ -201,12 +219,12 @@ Content-Type: application/json
 
 ### Accept a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/accept
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 
 ### Reject a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/reject
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}
 
 ### Ready an accepted order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/ready
-Authorization: Bearer {{access_token_owner1}}
+Authorization: Bearer {{session_token}}

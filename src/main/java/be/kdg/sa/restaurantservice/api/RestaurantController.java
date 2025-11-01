@@ -51,7 +51,7 @@ public class RestaurantController {
     @PostMapping
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<RestaurantDto> create(@RequestBody NewRestaurantDto newRestaurantDto,
-                                                       @AuthenticationPrincipal Jwt token) {
+                                                @AuthenticationPrincipal Jwt token) {
         Restaurant restaurant = restaurants.create(
                 new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID))),
                 newRestaurantDto
@@ -60,6 +60,14 @@ public class RestaurantController {
         RestaurantDto result = RestaurantDto.from(restaurant);
 
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/mine")
+    @PreAuthorize("hasAuthority('owner')")
+    public ResponseEntity<RestaurantDto> findByOwnerId(@AuthenticationPrincipal Jwt token) {
+        OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final Restaurant restaurant = restaurants.findByOwnerId(ownerId);
+        return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
     //Dishes

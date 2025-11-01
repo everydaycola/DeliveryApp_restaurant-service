@@ -9,11 +9,12 @@ import java.util.Optional;
 
 public interface RestaurantRepository {
     Optional<Restaurant> findById(RestaurantId restaurantId);
-    void save(Restaurant restaurant);
-    List<Restaurant> findAll();
-    List<Restaurant> findAllWithOverride();
     Optional<Restaurant> findByIdWithMenu(RestaurantId restaurantId);
     Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId);
+    Optional<Restaurant> findByOwnerId(OwnerId ownerId);
+    List<Restaurant> findAll();
+    List<Restaurant> findAllWithOverride();
     Optional<Dish> findDishById(RestaurantId restaurantId, DishId dishId);
     Optional<List<Dish>> findDishesByDishState(RestaurantId restaurantId, DishState state);
+    void save(Restaurant restaurant);
 }

@@ -3,10 +3,7 @@ package be.kdg.sa.restaurantservice.infrastructure;
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
-import be.kdg.sa.restaurantservice.domain.restaurant.OverrideStatus;
-import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
-import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
-import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantRepository;
+import be.kdg.sa.restaurantservice.domain.restaurant.*;
 import be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant.JpaDishEntity;
 import be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant.JpaRestaurantEntity;
 import be.kdg.sa.restaurantservice.infrastructure.jpa.restaurant.JpaRestaurantRepository;
@@ -60,6 +57,12 @@ public class DbRestaurantRepository implements RestaurantRepository {
     @Override
     public Optional<Restaurant> findByIdWithMenuAndOpeningHours(RestaurantId restaurantId) {
         return this.jpaRestaurantRepository.findByIdWithMenuAndOpeningHours(restaurantId.id()).map(JpaRestaurantEntity::toDomain);
+    }
+
+    @Override
+    public Optional<Restaurant> findByOwnerId(OwnerId ownerId) {
+        return this.jpaRestaurantRepository.findByOwnerId(ownerId.id())
+                .map(JpaRestaurantEntity::toDomain);
     }
 
     @Override public Optional <Dish> findDishById(RestaurantId restaurantId, DishId dishId) {
