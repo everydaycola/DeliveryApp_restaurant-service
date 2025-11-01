@@ -33,7 +33,7 @@ public class DbRestaurantRepository implements RestaurantRepository {
     @Override
     public void save(Restaurant restaurant) {
         log.info("Saving restaurant {}", restaurant.getId());
-        JpaRestaurantEntity jpaRestaurantEntity = JpaRestaurantEntity.fromDomain(restaurant);
+        final var jpaRestaurantEntity = JpaRestaurantEntity.fromDomain(restaurant);
         this.jpaRestaurantRepository.save(jpaRestaurantEntity);
     }
 

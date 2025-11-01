@@ -34,7 +34,7 @@ class RestaurantControllerTest {
     @Test
     void shouldReturnTheMenuOfDishesWithAPublicState() throws Exception{
         //Arrange
-        Restaurant restaurant = testHelper.saveRestaurant();
+        final var restaurant = testHelper.saveRestaurant();
         testHelper.saveDish(restaurant.getId(), "Pasta Testo", DishState.PUBLISHED, "Test Pasta", 1.23);
         //Act & Assert
         mockMvc.perform(
@@ -49,7 +49,7 @@ class RestaurantControllerTest {
     @Test
     void shouldReturnAnEmptyMenuWhenNoDishesArePublic() throws Exception{
         //Arrange
-        Restaurant restaurant = testHelper.saveRestaurant();
+        final var restaurant = testHelper.saveRestaurant();
         testHelper.saveDish(restaurant.getId(), "Pasta Testo", DishState.NOT_PUBLISHED, "Test Pasta", 1.23);
         //Act & Assert
         mockMvc.perform(
@@ -66,8 +66,8 @@ class RestaurantControllerTest {
     @Test
     void shouldChangeDishStateToPublished() throws Exception {
         //Arrange
-        Restaurant restaurant = testHelper.saveRestaurant();
-        Dish dish = restaurant.addDish("Pasta Testo", "Test Pasta", 1.23);
+        final var restaurant = testHelper.saveRestaurant();
+        final var dish = restaurant.addDish("Pasta Testo", "Test Pasta", 1.23);
         testHelper.saveRestaurant(restaurant);
         //Act & Assert
         mockMvc.perform(
@@ -83,8 +83,8 @@ class RestaurantControllerTest {
     @Test
     void shouldNotChangeDishStateWhenAnIncompatibleStateIsGiven() throws Exception {
         //Arrange
-        Restaurant restaurant = testHelper.saveRestaurant();
-        Dish dish = restaurant.addDish("Pasta Testo", "Test Pasta", 1.23);
+        final var restaurant = testHelper.saveRestaurant();
+        final var dish = restaurant.addDish("Pasta Testo", "Test Pasta", 1.23);
         testHelper.saveRestaurant(restaurant);
         //Act & Assert
         mockMvc.perform(
@@ -101,26 +101,26 @@ class RestaurantControllerTest {
     void shouldAddANewRestaurant() throws Exception{
         //Arrange
         //Address json
-        JSONObject jsonAddress = new JSONObject();
+        final var jsonAddress = new JSONObject();
         jsonAddress.put("street", "The High Road");
         jsonAddress.put("number", 27);
         jsonAddress.put("postalCode", 713);
         jsonAddress.put("country", "America");
 
         //OpeningHours json
-        JSONArray jsonOpeningHours = new JSONArray();
+        final var jsonOpeningHours = new JSONArray();
 
-        JSONObject monday = new JSONObject();
+        final var monday = new JSONObject();
         monday.put("day", DayOfWeek.MONDAY.toString());
         monday.put("openingTime", "10:00:00");
         monday.put("closingTime", "22:00:00");
 
-        JSONObject tuesday = new JSONObject();
+        final var tuesday = new JSONObject();
         tuesday.put("day", DayOfWeek.TUESDAY.toString());
         tuesday.put("openingTime", "10:00:00");
         tuesday.put("closingTime", "22:00:00");
 
-        JSONObject wednesday = new JSONObject();
+        final var wednesday = new JSONObject();
         wednesday.put("day", DayOfWeek.WEDNESDAY.toString());
         wednesday.put("openingTime", "12:00:00");
         wednesday.put("closingTime", "20:00:00");
@@ -130,7 +130,7 @@ class RestaurantControllerTest {
         jsonOpeningHours.put(wednesday);
 
         //Restaurant Json
-        JSONObject jsonRestaurant = new JSONObject();
+        final var jsonRestaurant = new JSONObject();
         jsonRestaurant.put("ownerId", UUID.randomUUID());
         jsonRestaurant.put("name", "The Good, the Bread and Hungry");
         jsonRestaurant.put("address", jsonAddress);
@@ -154,7 +154,7 @@ class RestaurantControllerTest {
     @Test
     void shouldReturnBadRequestWhenEmptyBodyGivenWhenCreatingRestaurant() throws Exception {
         //Arrange
-        String restaurant = "";
+        final var restaurant = "";
 
         //Act & Assert
         mockMvc.perform(

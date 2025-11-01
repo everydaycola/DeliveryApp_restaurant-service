@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.Entity;
-import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.ArrayList;
 
@@ -32,7 +31,7 @@ public class Order {
 
     public void newOrderLine(int quantity, DishId dishId) {
         log.info("Adding order line for dish {}", dishId);
-        var existingOrderLine = this.orderLines.stream()
+        final var existingOrderLine = this.orderLines.stream()
                 .filter(ol -> ol.getDishId().equals(dishId))
                 .findFirst();
 

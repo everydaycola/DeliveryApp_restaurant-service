@@ -10,7 +10,6 @@ import be.kdg.sa.restaurantservice.infrastructure.jpa.order.JpaOrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class DbOrderRepository implements OrderRepository {
     @Override
     public void save(Order order) {
         log.info("Saving order {}", order.getOrderId().id());
-        JpaOrderEntity jpaOrderEntity = JpaOrderEntity.fromDomain(order);
+        final var jpaOrderEntity = JpaOrderEntity.fromDomain(order);
         this.jpaOrderRepository.save(jpaOrderEntity);
     }
 

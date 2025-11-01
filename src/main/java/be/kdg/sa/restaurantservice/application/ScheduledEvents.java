@@ -46,7 +46,7 @@ public class ScheduledEvents {
     @Transactional
     public void checkOverrides() {
         log.info("Checking for open/close overrides");
-        List<Restaurant> restaurantList = restaurants.findAllWithOverride();
+        final var restaurantList = restaurants.findAllWithOverride();
         restaurantList.stream()
                 .filter(r -> r.isOpen() == r.getOverrideStatus().getIsOpen())
                 .forEach(r -> {

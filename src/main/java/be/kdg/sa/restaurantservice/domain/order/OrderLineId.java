@@ -1,6 +1,5 @@
 package be.kdg.sa.restaurantservice.domain.order;
 
-import be.kdg.sa.restaurantservice.domain.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.ddd.annotation.ValueObject;
 

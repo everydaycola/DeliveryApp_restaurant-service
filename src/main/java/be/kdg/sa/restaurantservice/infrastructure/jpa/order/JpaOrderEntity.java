@@ -40,10 +40,10 @@ public class JpaOrderEntity {
     }
 
     public static JpaOrderEntity fromDomain(Order order) {
-        JpaOrderEntity jpaOrderEntity =
+        final var jpaOrderEntity =
                 new JpaOrderEntity(order.getOrderId().id(), order.getStatus(), order.getRestaurantId().id());
 
-        List<JpaOrderLineEntity> jpaOrderLines =
+        final var jpaOrderLines =
                 order.getOrderLines().stream()
                         .map(JpaOrderLineEntity::fromDomain)
                         .toList();
@@ -54,7 +54,7 @@ public class JpaOrderEntity {
     }
 
     public Order toDomain() {
-        Order order = new Order(
+        final var order = new Order(
                 new OrderId(this.orderId),
                 new RestaurantId(this.restaurantId)
         );

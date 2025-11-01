@@ -1,14 +1,13 @@
 package be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria;
 
 import be.kdg.sa.restaurantservice.domain.dish.Dish;
-import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.List;
 
 public class MeanPriceCriteriaCalculator implements PriceCriteriaCalculator {
     @Override
     public PriceCriteria calculate(List<Dish> menu) {
-        double mean = getMean(menu);
+        final var mean = getMean(menu);
         if (mean <= 10) {
             return PriceCriteria.CHEAP;
         } else if (mean <= 30) {

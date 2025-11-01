@@ -2,19 +2,17 @@ package be.kdg.sa.restaurantservice.api;
 
 import be.kdg.sa.restaurantservice.api.dtos.order.OrderDto;
 import be.kdg.sa.restaurantservice.api.dtos.order.OrderMessagingDto;
-import be.kdg.sa.restaurantservice.api.dtos.restaurant.*;
+import be.kdg.sa.restaurantservice.api.dtos.restaurant.NewRestaurantDto;
+import be.kdg.sa.restaurantservice.api.dtos.restaurant.RestaurantDto;
 import be.kdg.sa.restaurantservice.api.dtos.restaurant.dish.*;
 import be.kdg.sa.restaurantservice.application.OrderService;
 import be.kdg.sa.restaurantservice.application.RestaurantService;
 import be.kdg.sa.restaurantservice.config.RabbitMQProperties;
-import be.kdg.sa.restaurantservice.domain.dish.Dish;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import be.kdg.sa.restaurantservice.domain.dish.DishState;
-import be.kdg.sa.restaurantservice.domain.order.Order;
 import be.kdg.sa.restaurantservice.domain.order.OrderId;
 import be.kdg.sa.restaurantservice.domain.order.OrderStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
-import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderReadyMessage;
@@ -55,12 +53,12 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDto> create(@RequestBody NewRestaurantDto newRestaurantDto,
                                                 @AuthenticationPrincipal Jwt token) {
         log.info("Creating new restaurant {}", newRestaurantDto.name());
-        Restaurant restaurant = restaurants.create(
+        final var restaurant = restaurants.create(
                 new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID))),
                 newRestaurantDto
         );
 
-        RestaurantDto result = RestaurantDto.from(restaurant);
+        final var result = RestaurantDto.from(restaurant);
 
         return ResponseEntity.ok(result);
     }
@@ -69,8 +67,8 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<RestaurantDto> findByOwnerId(@AuthenticationPrincipal Jwt token) {
         log.info("Getting restaurant for owner {}", token.getClaimAsString(DATABASEID));
-        OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
-        final Restaurant restaurant = restaurants.findByOwnerId(ownerId);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurant = restaurants.findByOwnerId(ownerId);
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
@@ -78,9 +76,9 @@ public class RestaurantController {
     @PostMapping("/{id}/menu")
     public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody NewDishDto newDishDto){
         log.info("Creating new dish for restaurant {}", id);
-        final RestaurantId restaurantId = new RestaurantId(id);
+        final var restaurantId = new RestaurantId(id);
 
-        Dish dish = restaurants.createDish(restaurantId, newDishDto.name(), newDishDto.description(), newDishDto.price());
+        final var dish = restaurants.createDish(restaurantId, newDishDto.name(), newDishDto.description(), newDishDto.price());
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -90,17 +88,17 @@ public class RestaurantController {
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantDto> findById(@PathVariable final UUID id) {
         log.info("Getting restaurant {}", id);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
+        final var restaurantId = new RestaurantId(id);
+        final var restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
 
     @GetMapping
     public ResponseEntity<List<RestaurantDto>> findAll() {
         log.info("Getting all restaurants");
-        List<Restaurant> allRestaurants = restaurants.findAll();
+        final var allRestaurants = restaurants.findAll();
 
-        List<RestaurantDto> dtos = allRestaurants.stream()
+        final var dtos = allRestaurants.stream()
                 .map(RestaurantDto::from)
                 .toList();
 
@@ -112,14 +110,14 @@ public class RestaurantController {
     public ResponseEntity<List<OrderDto>> findAllPendingOrdersForRestaurant(@PathVariable UUID id,
                                                                             @AuthenticationPrincipal Jwt token){
         log.info("Getting all pending orders for restaurant {}", id);
-        final RestaurantId restaurantId = new RestaurantId(id);
+        final var restaurantId = new RestaurantId(id);
 
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
         restaurants.checkOwnership(restaurantId, ownerId);
 
-        List<Order> pendingOrders = orders.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.PENDING);
+        final var pendingOrders = orders.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.PENDING);
 
-        List<OrderDto> dtos = pendingOrders.stream().map(OrderDto::from).toList();
+        final var dtos = pendingOrders.stream().map(OrderDto::from).toList();
 
         return ResponseEntity.ok(dtos);
     }
@@ -130,13 +128,13 @@ public class RestaurantController {
     public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id,
                                                       @AuthenticationPrincipal Jwt token) {
         log.info("Getting full menu for restaurant {}", id);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurantId = new RestaurantId(id);
+        final var restaurant = restaurants.findByIdWithMenu(restaurantId);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
         restaurant.checkIfOwnerBy(ownerId);
-        List<Dish> allDishes = restaurant.getFullMenu();
+        final var allDishes = restaurant.getFullMenu();
 
-        List<DishDto> dtos = allDishes.stream()
+        final var dtos = allDishes.stream()
                 .map(DishDto::from)
                 .toList();
 
@@ -146,10 +144,10 @@ public class RestaurantController {
     @GetMapping("/{id}/menu")
     public ResponseEntity<List<DishDto>> findPublicMenu(@PathVariable final UUID id) {
         log.info("Getting public menu for restaurant {}", id);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        List<Dish> allDishes = restaurants.findMenuWithDishState(restaurantId, DishState.PUBLISHED);
+        final var restaurantId = new RestaurantId(id);
+        final var allDishes = restaurants.findMenuWithDishState(restaurantId, DishState.PUBLISHED);
 
-        List<DishDto> dtos = allDishes.stream()
+        final var dtos = allDishes.stream()
                 .map(DishDto::from)
                 .toList();
 
@@ -159,10 +157,10 @@ public class RestaurantController {
     @GetMapping("/{id}/menu/{dishId}")
     public ResponseEntity<DishDto> findDish(@PathVariable final UUID id, @PathVariable final UUID dishId) {
         log.info("Getting dish {} for restaurant {}", dishId, id);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final DishId dId = new DishId(dishId);
+        final var restaurantId = new RestaurantId(id);
+        final var dId = new DishId(dishId);
 
-        Dish dish = restaurants.findDishById(restaurantId, dId);
+        final var dish = restaurants.findDishById(restaurantId, dId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -175,10 +173,10 @@ public class RestaurantController {
                                                                @RequestParam final boolean open,
                                                                @AuthenticationPrincipal Jwt token){
         log.info("Updating restaurant {} to {}", id, open);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurantId = new RestaurantId(id);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        Restaurant restaurant = restaurants.openOrCloseRestaurant(restaurantId, open, ownerId);
+        final var restaurant = restaurants.openOrCloseRestaurant(restaurantId, open, ownerId);
 
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
@@ -188,10 +186,10 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDto> stopOpeningHoursOverwrite(@PathVariable final UUID id,
                                                     @AuthenticationPrincipal Jwt token){
         log.info("Stopping overwrite for restaurant {}", id);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurantId = new RestaurantId(id);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        final Restaurant restaurant = restaurants.resetOverwrite(restaurantId, ownerId);
+        final var restaurant = restaurants.resetOverwrite(restaurantId, ownerId);
 
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
     }
@@ -204,11 +202,11 @@ public class RestaurantController {
                                               @RequestBody UpdateDishDto dishDto,
                                               @AuthenticationPrincipal Jwt token){
         log.info("Updating dish {} for restaurant {}", dishId, id);
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final DishId dId = new DishId(dishId);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurantId = new RestaurantId(id);
+        final var dId = new DishId(dishId);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        Dish dish = restaurants.updateDish(restaurantId, dId, dishDto.name(), dishDto.description(), ownerId);
+        final var dish = restaurants.updateDish(restaurantId, dId, dishDto.name(), dishDto.description(), ownerId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -220,11 +218,11 @@ public class RestaurantController {
                                                    @RequestBody UpdateDishStateDto dishStateDto,
                                                    @AuthenticationPrincipal Jwt token){
         log.info("Updating dish {} for restaurant {} to {}", dishId, id, dishStateDto.state());
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final DishId dId = new DishId(dishId);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurantId = new RestaurantId(id);
+        final var dId = new DishId(dishId);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        Dish dish = restaurants.updateDishState(restaurantId, dId, dishStateDto.state(), ownerId);
+        final var dish = restaurants.updateDishState(restaurantId, dId, dishStateDto.state(), ownerId);
 
         return ResponseEntity.ok(DishDto.from(dish));
     }
@@ -233,12 +231,12 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<List<DishDto>> publishReadyDishes(@PathVariable final UUID id,
                                                             @AuthenticationPrincipal Jwt token){
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var restaurantId = new RestaurantId(id);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
-        List<Dish> dishes = restaurants.publishReadyDishes(restaurantId, ownerId);
+        final var dishes = restaurants.publishReadyDishes(restaurantId, ownerId);
 
-        List<DishDto> dtos = dishes.stream()
+        final var dtos = dishes.stream()
                 .map(DishDto::from)
                 .toList();
 
@@ -250,12 +248,12 @@ public class RestaurantController {
     public ResponseEntity<List<DishDto>> publishDishesOnSchedule(@PathVariable final UUID id,
                                                                  @RequestBody DishScheduleDto dishScheduleDto,
                                                                  @AuthenticationPrincipal Jwt token){
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
-        List<DishId> dishIds = dishScheduleDto.dishIds().stream().map(DishId::new).toList();
+        final var restaurantId = new RestaurantId(id);
+        final var ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
+        final var dishIds = dishScheduleDto.dishIds().stream().map(DishId::new).toList();
 
-        List<Dish> updatedDishes = restaurants.publishDishesOnSchedule(restaurantId, dishScheduleDto.scheduledDate(), dishIds, ownerId);
-        List<DishDto> dtos = updatedDishes.stream()
+        final var updatedDishes = restaurants.publishDishesOnSchedule(restaurantId, dishScheduleDto.scheduledDate(), dishIds, ownerId);
+        final var dtos = updatedDishes.stream()
                 .map(DishDto::from)
                 .toList();
 
@@ -266,11 +264,10 @@ public class RestaurantController {
     @PatchMapping("/{id}/orders/{orderId}/accept")
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<OrderDto> acceptOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OrderId ordId = new OrderId(orderId);
+        final var restaurantId = new RestaurantId(id);
+        final var ordId = new OrderId(orderId);
 
-        // todo there is no point accepting it here if you never use the updated enum afterwards
-        Order order = orders.acceptOrder(restaurantId,ordId, true);
+        final var order = orders.acceptOrder(restaurantId,ordId, true);
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),
@@ -284,10 +281,10 @@ public class RestaurantController {
     @PatchMapping("/{id}/orders/{orderId}/reject")
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<OrderDto> rejectOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OrderId ordId = new OrderId(orderId);
+        final var restaurantId = new RestaurantId(id);
+        final var ordId = new OrderId(orderId);
 
-        Order order = orders.acceptOrder(restaurantId,ordId,false);
+        final var order = orders.acceptOrder(restaurantId,ordId,false);
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),
@@ -301,10 +298,10 @@ public class RestaurantController {
     @PatchMapping("/{id}/orders/{orderId}/ready")
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<OrderDto> readyOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
-        final RestaurantId restaurantId = new RestaurantId(id);
-        final OrderId ordId = new OrderId(orderId);
+        final var restaurantId = new RestaurantId(id);
+        final var ordId = new OrderId(orderId);
 
-        Order order = orders.readyOrder(restaurantId,ordId);
+        final var order = orders.readyOrder(restaurantId,ordId);
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),

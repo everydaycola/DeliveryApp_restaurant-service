@@ -2,12 +2,14 @@ package be.kdg.sa.restaurantservice.application;
 
 import be.kdg.sa.restaurantservice.config.DomainProperties;
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
-import be.kdg.sa.restaurantservice.domain.order.*;
+import be.kdg.sa.restaurantservice.domain.order.Order;
+import be.kdg.sa.restaurantservice.domain.order.OrderId;
+import be.kdg.sa.restaurantservice.domain.order.OrderRepository;
+import be.kdg.sa.restaurantservice.domain.order.OrderStatus;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderPlacedMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 import java.util.UUID;
@@ -52,10 +54,10 @@ public class OrderService {
 
     public void placeOrder(OrderPlacedMessage message) {
         log.info("Placing order for restaurant {}", message.orderDto().restaurantId());
-        RestaurantId resId = new RestaurantId(UUID.fromString(message.orderDto().restaurantId()));
-        OrderId ordId = new OrderId(UUID.fromString(message.orderDto().orderId()));
+        final var resId = new RestaurantId(UUID.fromString(message.orderDto().restaurantId()));
+        final var ordId = new OrderId(UUID.fromString(message.orderDto().orderId()));
 
-        Order order = new Order(ordId, resId);
+        final var order = new Order(ordId, resId);
         order.setStatus(OrderStatus.valueOf(message.orderDto().status()));
 
         orders.save(order);
@@ -69,15 +71,15 @@ public class OrderService {
 
     private void addOrderLineToOrder(UUID orderId, int quantity, DishId dishId){
         log.info("Adding line to order {} with quantity {} and dish {}", orderId, quantity, dishId);
-        OrderId orderID = new OrderId(orderId);
-        Order order = findByIdWithLines(orderID);
+        final var orderID = new OrderId(orderId);
+        final var order = findByIdWithLines(orderID);
         order.newOrderLine(quantity, dishId);
         orders.save(order);
     }
 
     public Order acceptOrder(RestaurantId restaurantId, OrderId orderId, boolean accept){
         log.info("Accepting order {} for restaurant {} with result {}", orderId.id(), restaurantId.id(), accept);
-        Order order = findByRestaurantIdAndOrderId(restaurantId,orderId);
+        final var order = findByRestaurantIdAndOrderId(restaurantId,orderId);
         order.acceptOrReject(accept);
         orders.save(order);
         return order;
@@ -85,7 +87,7 @@ public class OrderService {
 
     public Order readyOrder(RestaurantId restaurantId, OrderId orderId){
         log.info("Readying order {} for restaurant {}", orderId.id(), restaurantId.id());
-        Order order = findByRestaurantIdAndOrderId(restaurantId, orderId);
+        final var order = findByRestaurantIdAndOrderId(restaurantId, orderId);
         order.ready();
         orders.save(order);
         return order;

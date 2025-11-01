@@ -76,7 +76,7 @@ public class JpaRestaurantEntity {
 
     public static JpaRestaurantEntity fromDomain(Restaurant restaurant) {
         //Filling Jpa Object without the menu
-        JpaRestaurantEntity jpaRestaurantEntity = new JpaRestaurantEntity(
+        final var jpaRestaurantEntity = new JpaRestaurantEntity(
                 restaurant.getId().id(),
                 restaurant.getOwnerId().id(),
                 restaurant.getName(),

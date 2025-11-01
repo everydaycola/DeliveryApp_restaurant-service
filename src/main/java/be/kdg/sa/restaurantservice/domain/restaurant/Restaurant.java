@@ -75,7 +75,7 @@ public class Restaurant {
 
     private boolean checkIfOpen() {
         if (!this.overrideStatus.equals(OverrideStatus.NONE)) return this.overrideStatus.getIsOpen();
-        LocalDateTime now = LocalDateTime.now();
+        final var now = LocalDateTime.now();
         return openingHours.stream()
                 .filter(roh -> roh.day().equals(now.getDayOfWeek()))
                 .anyMatch(roh -> roh.openingTime().isBefore(now.toLocalTime()) &&
@@ -108,7 +108,7 @@ public class Restaurant {
     //Dish Aggregate
     public Dish addDish(String dishName, String description, double price) {
         log.info("New dish {} added to {}", dishName, this.getName());
-        Dish newDish = new Dish(DishId.create(), dishName, description, price);
+        final var newDish = new Dish(DishId.create(), dishName, description, price);
         this.menu.add(newDish);
         this.calculatePriceCriteria();
         return newDish;
@@ -116,14 +116,14 @@ public class Restaurant {
 
     public Dish updateDish(DishId id, String name, String description) {
         log.info("Dish {} updated", id);
-        Dish dish = this.getDish(id);
+        final var dish = this.getDish(id);
         dish.updateDish(name, description);
         calculatePriceCriteria();
         return dish;
     }
 
     public Dish updateDishState(DishId id, DishState state, int maxDishes) {
-        Dish dish = this.getDish(id);
+        final var dish = this.getDish(id);
 
         if (state.equals(DishState.PUBLISHED) && menu.size() >= maxDishes) {
             log.info("Restaurant {} has {} dishes, the max is {}", this.getName(), menu.size(), maxDishes);
