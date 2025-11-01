@@ -26,26 +26,32 @@ public class OrderService {
     }
 
     public Order findById(OrderId orderId) {
+        log.info("Finding order {}", orderId.id());
         return orders.findById(orderId).orElseThrow(orderId::notFound);
     }
 
     public Order findByIdWithLines(OrderId orderId){
+        log.info("Finding order with lines {}", orderId.id());
         return orders.findByIdWithLines(orderId).orElseThrow(orderId::notFound);
     }
 
     public List<Order> findAllByRestaurantIdAndStatus(RestaurantId restaurantId, OrderStatus status) {
+        log.info("Finding all orders for restaurant {} with status {}", restaurantId.id(), status);
         return orders.findAllByRestaurantIdAndOrderStatus(restaurantId, status).orElseThrow(restaurantId::notFound);
     }
 
     private Order findByRestaurantIdAndOrderId(RestaurantId restaurantId, OrderId orderId){
+        log.info("Finding order for restaurant {} and order {}", restaurantId.id(), orderId.id());
         return orders.findByRestaurantIdAndOrderId(restaurantId,orderId).orElseThrow(orderId::notFound);
     }
 
     private Order findByRestaurantIdAndOrderIdAndStatus(RestaurantId restaurantId, OrderId orderId, OrderStatus orderStatus){
+        log.info("Finding order for restaurant {} and order {} with status {}", restaurantId.id(), orderId.id(), orderStatus);
         return orders.findByRestaurantIdAndOrderIdAndOrderStatus(restaurantId,orderId,orderStatus).orElseThrow(orderId::notFound);
     }
 
     public void placeOrder(OrderPlacedMessage message) {
+        log.info("Placing order for restaurant {}", message.orderDto().restaurantId());
         RestaurantId resId = new RestaurantId(UUID.fromString(message.orderDto().restaurantId()));
         OrderId ordId = new OrderId(UUID.fromString(message.orderDto().orderId()));
 
@@ -53,37 +59,35 @@ public class OrderService {
         order.setStatus(OrderStatus.valueOf(message.orderDto().status()));
 
         orders.save(order);
-        log.info("Order {} successfully placed", order.getOrderId().id());
 
         message.orderDto().orderLines().forEach(orderLineDto ->
                 addOrderLineToOrder(order.getOrderId().id(),orderLineDto.amount(),new DishId(UUID.fromString(orderLineDto.dishId())))
         );
-        log.info("All lines of Order {} have been successfully added", order.getOrderId());
 
         restaurantTaskScheduler.StartOrderTimeOut(resId, ordId, domainProperties.getOrderTimeout());
     }
 
     private void addOrderLineToOrder(UUID orderId, int quantity, DishId dishId){
+        log.info("Adding line to order {} with quantity {} and dish {}", orderId, quantity, dishId);
         OrderId orderID = new OrderId(orderId);
         Order order = findByIdWithLines(orderID);
         order.newOrderLine(quantity, dishId);
         orders.save(order);
-        log.info("Dish {} added to Order {}",dishId.id(),order.getOrderId().id());
     }
 
     public Order acceptOrder(RestaurantId restaurantId, OrderId orderId, boolean accept){
+        log.info("Accepting order {} for restaurant {} with result {}", orderId.id(), restaurantId.id(), accept);
         Order order = findByRestaurantIdAndOrderId(restaurantId,orderId);
         order.acceptOrReject(accept);
         orders.save(order);
-        log.info("Order {} accepted", order.getOrderId().id());
         return order;
     }
 
     public Order readyOrder(RestaurantId restaurantId, OrderId orderId){
+        log.info("Readying order {} for restaurant {}", orderId.id(), restaurantId.id());
         Order order = findByRestaurantIdAndOrderId(restaurantId, orderId);
         order.ready();
         orders.save(order);
-        log.info("Order {} set ready for pickup", order.getOrderId().id());
         return order;
     }
 }

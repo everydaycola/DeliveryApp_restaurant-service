@@ -3,9 +3,11 @@ package be.kdg.sa.restaurantservice.api.dtos.restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.OwnerId;
 import be.kdg.sa.restaurantservice.domain.restaurant.Restaurant;
 import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantType;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.List;
 
+@ValueObject
 public record NewRestaurantDto(
         String name,
         AddressDto address,

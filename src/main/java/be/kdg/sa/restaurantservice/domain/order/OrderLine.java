@@ -2,7 +2,9 @@ package be.kdg.sa.restaurantservice.domain.order;
 
 import be.kdg.sa.restaurantservice.domain.dish.DishId;
 import lombok.Getter;
+import org.jmolecules.ddd.annotation.Entity;
 
+@Entity
 public class OrderLine {
     @Getter
     private final OrderLineId id;

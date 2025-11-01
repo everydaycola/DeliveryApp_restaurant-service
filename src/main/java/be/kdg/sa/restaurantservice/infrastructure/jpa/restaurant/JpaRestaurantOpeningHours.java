@@ -41,7 +41,7 @@ public class JpaRestaurantOpeningHours {
     }
 
     public static JpaRestaurantOpeningHours fromDomain(RestaurantOpeningHours roh){
-        return new JpaRestaurantOpeningHours(UUID.randomUUID(), roh.getDay(), roh.getOpeningTime(), roh.getClosingTime());
+        return new JpaRestaurantOpeningHours(UUID.randomUUID(), roh.day(), roh.openingTime(), roh.closingTime());
     }
 
     public RestaurantOpeningHours toDomain() {

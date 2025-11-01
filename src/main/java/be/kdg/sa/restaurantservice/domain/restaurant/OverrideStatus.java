@@ -1,8 +1,10 @@
 package be.kdg.sa.restaurantservice.domain.restaurant;
 
 import lombok.Getter;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 @Getter
+@ValueObject
 public enum OverrideStatus {
     NONE(null),
     FORCED_OPEN(true),

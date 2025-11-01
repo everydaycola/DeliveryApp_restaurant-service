@@ -5,10 +5,13 @@ import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jmolecules.ddd.annotation.Entity;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.ArrayList;
 
 @Slf4j
+@Entity
 public class Order {
     @Getter
     private final OrderId orderId;

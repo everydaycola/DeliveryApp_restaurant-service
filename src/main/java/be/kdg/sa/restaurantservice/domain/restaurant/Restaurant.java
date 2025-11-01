@@ -77,54 +77,48 @@ public class Restaurant {
         if (!this.overrideStatus.equals(OverrideStatus.NONE)) return this.overrideStatus.getIsOpen();
         LocalDateTime now = LocalDateTime.now();
         return openingHours.stream()
-                .filter(roh -> roh.getDay().equals(now.getDayOfWeek()))
-                .anyMatch(roh -> roh.getOpeningTime().isBefore(now.toLocalTime()) &&
-                        roh.getClosingTime().isAfter(now.toLocalTime()));
+                .filter(roh -> roh.day().equals(now.getDayOfWeek()))
+                .anyMatch(roh -> roh.openingTime().isBefore(now.toLocalTime()) &&
+                        roh.closingTime().isAfter(now.toLocalTime()));
     }
 
     public void open(boolean isOpen) {
+        log.info("Restaurant {} is now {} and standard opening hours are overwritten", this.name, isOpen? "open" : "closed");
         this.isOpen = isOpen;
         this.overrideStatus = OverrideStatus.fromBoolean(isOpen);
-
-        log.info("Restaurant {} is now {} and standard opening hours are overwritten", this.name, isOpen? "open" : "closed");
     }
 
     public void stopOverwriteOpeningHours(){
-        this.overrideStatus = OverrideStatus.NONE;
-
         log.info("Restaurant {} returns to normal opening hours", this.name);
+        this.overrideStatus = OverrideStatus.NONE;
     }
 
     private void calculatePriceCriteria() {
-        priceCriteria = priceCriteriaCalculator.calculate(menu);
         log.info("PriceCriteria of {} set to {}",this.name, priceCriteria);
+        priceCriteria = priceCriteriaCalculator.calculate(menu);
     }
 
     // unused currently but allows future strategy changes
     public void changePriceCalculatorStrategy(PriceCriteriaCalculator priceCriteriaCalculator) {
+        log.info("PriceCriteriaCalculator of {} changed to {}",this.name, priceCriteriaCalculator);
         this.priceCriteriaCalculator = priceCriteriaCalculator;
         calculatePriceCriteria();
     }
 
     //Dish Aggregate
     public Dish addDish(String dishName, String description, double price) {
+        log.info("New dish {} added to {}", dishName, this.getName());
         Dish newDish = new Dish(DishId.create(), dishName, description, price);
         this.menu.add(newDish);
-
-        log.info("New dish {} added to {}", newDish.getName(), this.getName());
-
         this.calculatePriceCriteria();
-
         return newDish;
     }
 
     public Dish updateDish(DishId id, String name, String description) {
+        log.info("Dish {} updated", id);
         Dish dish = this.getDish(id);
         dish.updateDish(name, description);
         calculatePriceCriteria();
-
-        log.info("Dish {} updated", dish.getId());
-
         return dish;
     }
 
@@ -143,28 +137,30 @@ public class Restaurant {
     }
 
     public List<Dish> getFullMenu() {
+        log.info("Getting full menu of {}", this.getName());
         return menu;
     }
 
     public Dish getDish(DishId dishId) {
+        log.info("Getting dish {} from {}", dishId, this.getName());
         return menu.stream().filter(dish -> dish.getId().equals(dishId)).findFirst().orElseThrow();
     }
 
     //OpeningHours Aggregate
     public void addOpeningHours(RestaurantOpeningHours newOpeningHours) {
+        log.info("New opening hours {} added to {}", newOpeningHours, this.getName());
         if (!this.openingHours.isEmpty() && checkOpeningHoursOverlap(newOpeningHours)) {
             throw new IllegalArgumentException("The new hours overlap with existing hours");
         }
-        log.info("New opening hours succesfully added");
         this.openingHours.add(newOpeningHours);
     }
 
     private boolean checkOpeningHoursOverlap(RestaurantOpeningHours newRoh) {
-        log.info("Checking if new hours overlap with current hours");
+        log.info("Checking if new opening hours {} overlap with existing opening hours", newRoh);
         return openingHours.stream()
-                .filter(roh -> roh.getDay().equals(newRoh.getDay()))
-                .anyMatch(roh -> roh.getOpeningTime().isBefore(newRoh.getClosingTime()) ||
-                        roh.getClosingTime().isAfter(newRoh.getOpeningTime()));
+                .filter(roh -> roh.day().equals(newRoh.day()))
+                .anyMatch(roh -> roh.openingTime().isBefore(newRoh.closingTime()) ||
+                        roh.closingTime().isAfter(newRoh.openingTime()));
     }
 
     public void checkIfOwnerBy(OwnerId ownerId) {

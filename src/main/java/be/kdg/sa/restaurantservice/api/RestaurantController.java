@@ -19,6 +19,7 @@ import be.kdg.sa.restaurantservice.domain.restaurant.RestaurantId;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderAcceptedMessage;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderReadyMessage;
 import be.kdg.sa.restaurantservice.infrastructure.rabbitMQ.messages.OrderRejectedMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/restaurants")
 public class RestaurantController {
@@ -52,6 +54,7 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<RestaurantDto> create(@RequestBody NewRestaurantDto newRestaurantDto,
                                                 @AuthenticationPrincipal Jwt token) {
+        log.info("Creating new restaurant {}", newRestaurantDto.name());
         Restaurant restaurant = restaurants.create(
                 new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID))),
                 newRestaurantDto
@@ -65,6 +68,7 @@ public class RestaurantController {
     @GetMapping("/mine")
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<RestaurantDto> findByOwnerId(@AuthenticationPrincipal Jwt token) {
+        log.info("Getting restaurant for owner {}", token.getClaimAsString(DATABASEID));
         OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
         final Restaurant restaurant = restaurants.findByOwnerId(ownerId);
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
@@ -73,6 +77,7 @@ public class RestaurantController {
     //Dishes
     @PostMapping("/{id}/menu")
     public ResponseEntity<DishDto> createDish(@PathVariable final UUID id, @RequestBody NewDishDto newDishDto){
+        log.info("Creating new dish for restaurant {}", id);
         final RestaurantId restaurantId = new RestaurantId(id);
 
         Dish dish = restaurants.createDish(restaurantId, newDishDto.name(), newDishDto.description(), newDishDto.price());
@@ -84,6 +89,7 @@ public class RestaurantController {
     //Restaurant
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantDto> findById(@PathVariable final UUID id) {
+        log.info("Getting restaurant {}", id);
         final RestaurantId restaurantId = new RestaurantId(id);
         final Restaurant restaurant = restaurants.findByIdWithMenuAndOpeningHours(restaurantId);
         return ResponseEntity.ok(RestaurantDto.from(restaurant));
@@ -91,6 +97,7 @@ public class RestaurantController {
 
     @GetMapping
     public ResponseEntity<List<RestaurantDto>> findAll() {
+        log.info("Getting all restaurants");
         List<Restaurant> allRestaurants = restaurants.findAll();
 
         List<RestaurantDto> dtos = allRestaurants.stream()
@@ -104,6 +111,7 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<List<OrderDto>> findAllPendingOrdersForRestaurant(@PathVariable UUID id,
                                                                             @AuthenticationPrincipal Jwt token){
+        log.info("Getting all pending orders for restaurant {}", id);
         final RestaurantId restaurantId = new RestaurantId(id);
 
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
@@ -121,6 +129,7 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<List<DishDto>> findFullMenu(@PathVariable final UUID id,
                                                       @AuthenticationPrincipal Jwt token) {
+        log.info("Getting full menu for restaurant {}", id);
         final RestaurantId restaurantId = new RestaurantId(id);
         Restaurant restaurant = restaurants.findByIdWithMenu(restaurantId);
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
@@ -136,6 +145,7 @@ public class RestaurantController {
 
     @GetMapping("/{id}/menu")
     public ResponseEntity<List<DishDto>> findPublicMenu(@PathVariable final UUID id) {
+        log.info("Getting public menu for restaurant {}", id);
         final RestaurantId restaurantId = new RestaurantId(id);
         List<Dish> allDishes = restaurants.findMenuWithDishState(restaurantId, DishState.PUBLISHED);
 
@@ -148,6 +158,7 @@ public class RestaurantController {
 
     @GetMapping("/{id}/menu/{dishId}")
     public ResponseEntity<DishDto> findDish(@PathVariable final UUID id, @PathVariable final UUID dishId) {
+        log.info("Getting dish {} for restaurant {}", dishId, id);
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
 
@@ -163,6 +174,7 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDto> openOrCloseRestaurant(@PathVariable final UUID id,
                                                                @RequestParam final boolean open,
                                                                @AuthenticationPrincipal Jwt token){
+        log.info("Updating restaurant {} to {}", id, open);
         final RestaurantId restaurantId = new RestaurantId(id);
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
@@ -175,6 +187,7 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('owner')")
     public ResponseEntity<RestaurantDto> stopOpeningHoursOverwrite(@PathVariable final UUID id,
                                                     @AuthenticationPrincipal Jwt token){
+        log.info("Stopping overwrite for restaurant {}", id);
         final RestaurantId restaurantId = new RestaurantId(id);
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
 
@@ -190,6 +203,7 @@ public class RestaurantController {
                                               @PathVariable final UUID dishId,
                                               @RequestBody UpdateDishDto dishDto,
                                               @AuthenticationPrincipal Jwt token){
+        log.info("Updating dish {} for restaurant {}", dishId, id);
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));
@@ -205,6 +219,7 @@ public class RestaurantController {
                                                    @PathVariable final UUID dishId,
                                                    @RequestBody UpdateDishStateDto dishStateDto,
                                                    @AuthenticationPrincipal Jwt token){
+        log.info("Updating dish {} for restaurant {} to {}", dishId, id, dishStateDto.state());
         final RestaurantId restaurantId = new RestaurantId(id);
         final DishId dId = new DishId(dishId);
         final OwnerId ownerId = new OwnerId(UUID.fromString(token.getClaimAsString(DATABASEID)));

@@ -1,8 +1,9 @@
 package be.kdg.sa.restaurantservice.api.dtos.order;
 
-
 import be.kdg.sa.restaurantservice.domain.order.OrderLine;
+import org.jmolecules.ddd.annotation.ValueObject;
 
+@ValueObject
 public record OrderLineDto(
         String dishId,
         int amount

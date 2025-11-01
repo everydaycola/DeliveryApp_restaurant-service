@@ -46,6 +46,7 @@ public class RestaurantService {
 
     //Dish
     public Dish createDish(RestaurantId id, String dishName, String description, double price){
+        log.info("Creating dish for restaurant {}", id.id());
         Restaurant restaurant = restaurants.findByIdWithMenu(id).orElseThrow(id::notFound);
         Dish dish = restaurant.addDish(dishName, description, price);
         restaurants.save(restaurant);
@@ -55,6 +56,7 @@ public class RestaurantService {
     //Find
     //Restaurant
     public Restaurant findById(RestaurantId restaurantId) {
+        log.info("Finding restaurant {}", restaurantId.id());
         return restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
@@ -63,34 +65,40 @@ public class RestaurantService {
         return restaurants.findByOwnerId(ownerId).orElseThrow(ownerId::restaurantNotFound);
     }
 
-    public Restaurant findByIdWithMenu(RestaurantId restaurantId){
+    public Restaurant findByIdWithMenu(RestaurantId restaurantId) {
+        log.info("Finding restaurant with menu {}", restaurantId.id());
         return restaurants.findByIdWithMenu(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
-    public Restaurant findByIdWithMenuAndOpeningHours(RestaurantId restaurantId){
+    public Restaurant findByIdWithMenuAndOpeningHours(RestaurantId restaurantId) {
+        log.info("Finding restaurant with menu and opening hours {}", restaurantId.id());
         return restaurants.findByIdWithMenuAndOpeningHours(restaurantId).orElseThrow(restaurantId::notFound);
     }
 
     public List<Restaurant> findAll() {
+        log.info("Finding all restaurants");
         return restaurants.findAll();
     }
 
     //Dish
-    public List<Dish> findMenuWithDishState(RestaurantId restaurantId, DishState state){
+    public List<Dish> findMenuWithDishState(RestaurantId restaurantId, DishState state) {
+        log.info("Finding dishes with state {} for restaurant {}", state, restaurantId.id());
         return restaurants.findDishesByDishState(restaurantId, state).orElseThrow(restaurantId::notFound);
     }
 
     //Update
     //Restaurant
-    public Restaurant openOrCloseRestaurant(RestaurantId restaurantId, boolean isOpen, OwnerId ownerId){
-        Restaurant restaurant =  findById(restaurantId);
+    public Restaurant openOrCloseRestaurant(RestaurantId restaurantId, boolean isOpen, OwnerId ownerId) {
+        log.info("Updating restaurant {} to {}", restaurantId.id(), isOpen);
+        Restaurant restaurant = findById(restaurantId);
         restaurant.checkIfOwnerBy(ownerId);
         restaurant.open(isOpen);
         restaurants.save(restaurant);
         return restaurant;
     }
 
-    public Restaurant resetOverwrite(RestaurantId restaurantId, OwnerId ownerId){
+    public Restaurant resetOverwrite(RestaurantId restaurantId, OwnerId ownerId) {
+        log.info("Resetting overwrite for restaurant {}", restaurantId.id());
         Restaurant restaurant = findById(restaurantId);
         restaurant.checkIfOwnerBy(ownerId);
         restaurant.stopOverwriteOpeningHours();
@@ -99,10 +107,12 @@ public class RestaurantService {
 
     //Dish
     public Dish findDishById(RestaurantId restaurantId, DishId dishId) {
+        log.info("Finding dish {} for restaurant {}", dishId.id(), restaurantId.id());
         return restaurants.findDishById(restaurantId, dishId).orElseThrow(dishId::notFound);
     }
 
-    public Dish updateDish(RestaurantId restaurantId, DishId dishId, String name, String description, OwnerId ownerId){
+    public Dish updateDish(RestaurantId restaurantId, DishId dishId, String name, String description, OwnerId ownerId) {
+        log.info("Updating dish {} for restaurant {}", dishId.id(), restaurantId.id());
         Restaurant restaurant = findByIdWithMenu(restaurantId);
         restaurant.checkIfOwnerBy(ownerId);
         Dish dish = restaurant.updateDish(dishId, name, description);
@@ -110,28 +120,31 @@ public class RestaurantService {
         return dish;
     }
 
-    public Dish updateDishState(RestaurantId restaurantId, DishId dishId, DishState state, OwnerId ownerId){
-       Restaurant restaurant = findByIdWithMenu(restaurantId);
-       restaurant.checkIfOwnerBy(ownerId);
-       Dish dish = restaurant.updateDishState(dishId, state, domainProperties.getMaxDishes());
-       restaurants.save(restaurant);
-       return dish;
-    }
-
-    public List<Dish> publishReadyDishes(RestaurantId restaurantId, OwnerId ownerId){
+    public Dish updateDishState(RestaurantId restaurantId, DishId dishId, DishState state, OwnerId ownerId) {
+        log.info("Updating dish {} for restaurant {} to {}", dishId.id(), restaurantId.id(), state);
         Restaurant restaurant = findByIdWithMenu(restaurantId);
         restaurant.checkIfOwnerBy(ownerId);
-        List<Dish> readyDishes = findMenuWithDishState(restaurantId,DishState.READY_FOR_PUBLISHING);
+        Dish dish = restaurant.updateDishState(dishId, state, domainProperties.getMaxDishes());
+        restaurants.save(restaurant);
+        return dish;
+    }
+
+    public List<Dish> publishReadyDishes(RestaurantId restaurantId, OwnerId ownerId) {
+        log.info("Publishing ready dishes for restaurant {}", restaurantId.id());
+        Restaurant restaurant = findByIdWithMenu(restaurantId);
+        restaurant.checkIfOwnerBy(ownerId);
+        List<Dish> readyDishes = findMenuWithDishState(restaurantId, DishState.READY_FOR_PUBLISHING);
 
         List<Dish> newPublicDished = readyDishes.stream()
-                .map(dish -> restaurant.updateDishState(dish.getId(),DishState.PUBLISHED, domainProperties.getMaxDishes())).toList();
+                .map(dish -> restaurant.updateDishState(dish.getId(), DishState.PUBLISHED, domainProperties.getMaxDishes())).toList();
 
         restaurants.save(restaurant);
 
         return newPublicDished;
     }
 
-    public List<Dish> publishDishesOnSchedule(RestaurantId id , Date scheduledDate, List<DishId> dishIds, OwnerId ownerId){
+    public List<Dish> publishDishesOnSchedule(RestaurantId id, Date scheduledDate, List<DishId> dishIds, OwnerId ownerId) {
+        log.info("Publishing dishes on schedule for restaurant {}", id.id());
         Restaurant restaurant = findByIdWithMenu(id);
         restaurant.checkIfOwnerBy(ownerId);
 
@@ -141,6 +154,7 @@ public class RestaurantService {
     }
 
     public void checkOwnership(RestaurantId restaurantId, OwnerId ownerId) {
+        log.info("Checking if restaurant {} is owned by {}", restaurantId.id(), ownerId.id());
         final Restaurant restaurant = restaurants.findById(restaurantId).orElseThrow(restaurantId::notFound);
         restaurant.checkIfOwnerBy(ownerId);
     }

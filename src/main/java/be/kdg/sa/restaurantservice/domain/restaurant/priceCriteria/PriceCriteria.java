@@ -1,10 +1,15 @@
 package be.kdg.sa.restaurantservice.domain.restaurant.priceCriteria;
 
+import lombok.Getter;
+import org.jmolecules.ddd.annotation.ValueObject;
+
+@Getter
+@ValueObject
 public enum PriceCriteria {
-    €("Cheap"),
-    €€("Normal"),
-    €€€("Expensive"),
-    €€€€("Premium"),
+    CHEAP("€"),
+    NORMAL("€€"),
+    EXPENSIVE("€€€"),
+    PREMIUM("€€€€"),
     UNKNOWN("Unknown");
 
     private final String Description;

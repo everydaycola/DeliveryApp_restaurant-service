@@ -1,11 +1,13 @@
 package be.kdg.sa.restaurantservice.api;
 
 import be.kdg.sa.restaurantservice.domain.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Slf4j
 @ControllerAdvice
 public class ErrorHandling {
     @ExceptionHandler(NotFoundException.class)
@@ -27,5 +29,8 @@ public class ErrorHandling {
     }
 
     public record ErrorResponse(String message) {
+        public ErrorResponse {
+            log.error(message);
+        }
     }
 }

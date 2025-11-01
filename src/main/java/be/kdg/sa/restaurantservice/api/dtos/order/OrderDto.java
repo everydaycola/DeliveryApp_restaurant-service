@@ -1,11 +1,11 @@
 package be.kdg.sa.restaurantservice.api.dtos.order;
 
-
-
 import be.kdg.sa.restaurantservice.domain.order.Order;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.List;
 
+@ValueObject
 public record OrderDto(
         String orderId,
         String restaurantId,
