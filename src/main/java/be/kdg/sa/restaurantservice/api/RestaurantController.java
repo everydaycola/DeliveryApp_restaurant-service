@@ -1,5 +1,6 @@
 package be.kdg.sa.restaurantservice.api;
 
+import be.kdg.sa.restaurantservice.api.dtos.order.OrderDeclineDto;
 import be.kdg.sa.restaurantservice.api.dtos.order.OrderDto;
 import be.kdg.sa.restaurantservice.api.dtos.order.OrderMessagingDto;
 import be.kdg.sa.restaurantservice.api.dtos.restaurant.NewRestaurantDto;
@@ -267,7 +268,7 @@ public class RestaurantController {
         final var restaurantId = new RestaurantId(id);
         final var ordId = new OrderId(orderId);
 
-        final var order = orders.acceptOrder(restaurantId,ordId, true);
+        final var order = orders.acceptOrder(restaurantId,ordId, true, "");
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),
@@ -280,16 +281,18 @@ public class RestaurantController {
 
     @PatchMapping("/{id}/orders/{orderId}/reject")
     @PreAuthorize("hasAuthority('owner')")
-    public ResponseEntity<OrderDto> rejectOrder(@PathVariable final UUID id, @PathVariable final UUID orderId){
+    public ResponseEntity<OrderDto> rejectOrder(@PathVariable final UUID id,
+                                                @PathVariable final UUID orderId,
+                                                @RequestBody OrderDeclineDto declineDto){
         final var restaurantId = new RestaurantId(id);
         final var ordId = new OrderId(orderId);
 
-        final var order = orders.acceptOrder(restaurantId,ordId,false);
+        final var order = orders.acceptOrder(restaurantId,ordId,false, declineDto.reason());
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),
                 rabbitMQProperties.getOrderRejectedBinding(),
-                new OrderRejectedMessage(OrderMessagingDto.from(order))
+                new OrderRejectedMessage(OrderMessagingDto.from(order, declineDto.reason()))
         );
 
         return ResponseEntity.ok(OrderDto.from(order));

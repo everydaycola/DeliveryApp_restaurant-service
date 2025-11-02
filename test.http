@@ -217,6 +217,10 @@ Content-Type: application/json
   ]
 }
 
+### GET all pending
+GET http://localhost:8081/api/restaurants/{{restaurant1}}/orders_pending
+Authorization: Bearer {{session_token}}
+
 ### Accept a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/accept
 Authorization: Bearer {{session_token}}
@@ -224,6 +228,11 @@ Authorization: Bearer {{session_token}}
 ### Reject a pending order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/reject
 Authorization: Bearer {{session_token}}
+Content-Type: application/json
+
+{
+  "reason": "You made a bad order."
+}
 
 ### Ready an accepted order
 PATCH http://localhost:8081/api/restaurants/{{restaurant1}}/orders/{{order1}}/ready

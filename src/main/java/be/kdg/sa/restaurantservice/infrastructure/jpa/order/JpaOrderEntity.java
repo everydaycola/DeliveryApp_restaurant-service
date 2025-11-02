@@ -29,19 +29,23 @@ public class JpaOrderEntity {
     @Column
     private UUID restaurantId;
 
+    @Column
+    private String comment;
+
     protected JpaOrderEntity() {
     }
 
-    public JpaOrderEntity(UUID orderId, OrderStatus status, UUID restaurantId) {
+    public JpaOrderEntity(UUID orderId, OrderStatus status, UUID restaurantId, String comment) {
         this.orderId = orderId;
         this.status = status;
         this.orderLines = new ArrayList<>();
         this.restaurantId = restaurantId;
+        this.comment = comment;
     }
 
     public static JpaOrderEntity fromDomain(Order order) {
         final var jpaOrderEntity =
-                new JpaOrderEntity(order.getOrderId().id(), order.getStatus(), order.getRestaurantId().id());
+                new JpaOrderEntity(order.getOrderId().id(), order.getStatus(), order.getRestaurantId().id(), order.getComment());
 
         final var jpaOrderLines =
                 order.getOrderLines().stream()
@@ -60,6 +64,7 @@ public class JpaOrderEntity {
         );
 
         order.setStatus(this.status);
+        order.setComment(this.comment);
 
         this.orderLines.forEach(jpaOrderLine ->
                 order.newOrderLine(

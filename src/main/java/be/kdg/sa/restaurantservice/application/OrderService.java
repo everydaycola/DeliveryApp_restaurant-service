@@ -77,10 +77,11 @@ public class OrderService {
         orders.save(order);
     }
 
-    public Order acceptOrder(RestaurantId restaurantId, OrderId orderId, boolean accept){
+    public Order acceptOrder(RestaurantId restaurantId, OrderId orderId, boolean accept, String reason){
         log.info("Accepting order {} for restaurant {} with result {}", orderId.id(), restaurantId.id(), accept);
         final var order = findByRestaurantIdAndOrderId(restaurantId,orderId);
         order.acceptOrReject(accept);
+        order.setComment(reason);
         orders.save(order);
         return order;
     }

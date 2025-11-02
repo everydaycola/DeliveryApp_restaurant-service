@@ -9,18 +9,18 @@ import org.jmolecules.ddd.annotation.Entity;
 
 import java.util.ArrayList;
 
+@Getter
 @Slf4j
 @Entity
 public class Order {
-    @Getter
     private final OrderId orderId;
     @Setter
-    @Getter
     private OrderStatus status;
-    @Getter
     private final ArrayList<OrderLine> orderLines;
-    @Getter
     private final RestaurantId restaurantId;
+    @Setter
+    private String comment;
+
 
     public Order(OrderId orderId, RestaurantId restaurantId) {
         this.orderId = orderId;

@@ -6,11 +6,16 @@ import org.jmolecules.ddd.annotation.ValueObject;
 import java.util.UUID;
 
 @ValueObject
-public record OrderMessagingDto(UUID id, UUID restaurantId) {
-    public static OrderMessagingDto from(Order order){
+public record OrderMessagingDto(UUID id, UUID restaurantId, String comment) {
+    public static OrderMessagingDto from(Order order, String reason){
         return new OrderMessagingDto(
                 order.getOrderId().id(),
-                order.getRestaurantId().id()
+                order.getRestaurantId().id(),
+                reason
         );
+    }
+
+    public static OrderMessagingDto from(Order order){
+        return OrderMessagingDto.from(order, "");
     }
 }
