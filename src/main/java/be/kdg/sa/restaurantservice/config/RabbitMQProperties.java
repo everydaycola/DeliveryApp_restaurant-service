@@ -11,6 +11,8 @@ public class RabbitMQProperties {
     private final String orderPlacedQueue;
     private final String orderPlacedBinding;
     private final String orderRejectedBinding;
-    private final String orderAcceptedBinding;
-    private final String orderReadyBinding;
+    private final String orderAcceptedOrderBinding;
+    private final String orderAcceptedDeliveryBinding;
+    private final String orderReadyDeliveryBinding;
+    private final String orderReadyOrderBinding;
 }

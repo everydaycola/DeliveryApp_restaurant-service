@@ -18,7 +18,10 @@ public class OrderPlacedMessageHandler {
     @RabbitListener(queues = "${spring.rabbitmq.kdg.order-placed-queue}")
     void onOrderPlacedMessageReceived(OrderPlacedMessage message) {
         log.info("Order Placed Message Received: Order={}", message.orderDto().orderId());
-
-        orderService.placeOrder(message);
+        try {
+            orderService.placeOrder(message);
+        } catch (IllegalStateException e) {
+            log.error("Error placing order: {}", e.getMessage());
+        }
     }
 }

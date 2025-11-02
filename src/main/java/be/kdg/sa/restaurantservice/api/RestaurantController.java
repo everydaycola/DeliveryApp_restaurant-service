@@ -272,7 +272,13 @@ public class RestaurantController {
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),
-                rabbitMQProperties.getOrderAcceptedBinding(),
+                rabbitMQProperties.getOrderAcceptedOrderBinding(),
+                new OrderAcceptedMessage(OrderMessagingDto.from(order))
+        );
+
+        rabbitTemplate.convertAndSend(
+                rabbitMQProperties.getExchangeName(),
+                rabbitMQProperties.getOrderAcceptedDeliveryBinding(),
                 new OrderAcceptedMessage(OrderMessagingDto.from(order))
         );
 
@@ -308,7 +314,13 @@ public class RestaurantController {
 
         rabbitTemplate.convertAndSend(
                 rabbitMQProperties.getExchangeName(),
-                rabbitMQProperties.getOrderReadyBinding(),
+                rabbitMQProperties.getOrderReadyOrderBinding(),
+                new OrderReadyMessage(OrderMessagingDto.from(order))
+        );
+
+        rabbitTemplate.convertAndSend(
+                rabbitMQProperties.getExchangeName(),
+                rabbitMQProperties.getOrderReadyDeliveryBinding(),
                 new OrderReadyMessage(OrderMessagingDto.from(order))
         );
 

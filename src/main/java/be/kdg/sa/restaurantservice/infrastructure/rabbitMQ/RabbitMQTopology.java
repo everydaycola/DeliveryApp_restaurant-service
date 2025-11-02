@@ -28,5 +28,4 @@ public class RabbitMQTopology {
     Binding orderPlacedBinding(){
         return BindingBuilder.bind(orderPlacedQueue()).to(kdgExchange()).with(properties.getOrderPlacedBinding());
     }
-
 }
