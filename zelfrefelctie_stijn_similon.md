@@ -70,3 +70,15 @@ DeliveryController: SetReady() andere naam geven
 - Dubbele code in deliver()
   - zou in 1 keer moeten kunnen
     - Tip: in Courier current delivery weg doen?
+
+# V3
+## Eindopleving 3/11/2025
+### Geschatte Progress (in procent): 99%
+### status
+#### User Stories
+Alle user stories op het issue bord staan op closed. Wat op het einde nog wel moeilijk was was proberen de betaal api Stripe werkende te krijgen.
+Dit is grotendeels gelukt maar als de betaling mislukt, wordt de order nog steeds wel naar de backend gestuurd en naar restaurant gestuurd.
+
+#### Niet US gerelateerd
+Alle nieuwe leerstof zit in het project, Ilja heeft de security gedaan en ik heb messaging afgewerkt. 
+Ik heb wel even bezig geweest met de queues juist door te hebben maar uiteindelijk is het in orde gekomen.
